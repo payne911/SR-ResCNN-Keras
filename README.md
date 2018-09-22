@@ -13,9 +13,16 @@ Notes to self.
 ```
 * Integrate TensorBoard
 * Use DIV2K dataset for training
+* Use Keras ImagePreProcessing object
 * Integrate Save/Load of Model Checkpoints
 * Make a proper README.md with this @ https://gist.github.com/PurpleBooth/109311bb0361f32d87a2
 ```
+
+# Demonstration
+
+Here is a simple image of the current progress made:
+
+![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results.png)
 
 ## Getting Started
 
