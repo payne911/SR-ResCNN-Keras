@@ -23,9 +23,8 @@ def setUpImages():
     for i in range(sample_amnt):
         train.append(mpimg.imread(data_path + str(i) + '.jpg'))
 
-    # for i in range(max_amnt-sample_amnt): TODO: revert this after done testing with memory problem on PREDICT/EVAL
-    #     finalTest.append(mpimg.imread(data_path + str(i+sample_amnt) + '.jpg'))
-    finalTest.append(mpimg.imread(data_path + str(13) + '.jpg'))
+    for i in range(max_amnt-sample_amnt):
+        finalTest.append(mpimg.imread(data_path + str(i+sample_amnt) + '.jpg'))
 
     # Augmenting data
     trainData = dataAugmentation(train)
@@ -50,15 +49,15 @@ def setUpData(trainData, testData):
     Y_train = trainData[:len(trainData)//2]    # First half is the unaltered data
     X_train = trainData[len(trainData)//2:]    # Second half is the deteriorated data
 
-    # Separating the testing data  # TODO: rename variables to conventions?
-    validateTestData = testData[:len(testData)//2]  # First half is the unaltered data
-    trainingTestData = testData[len(testData)//2:]  # Second half is the deteriorated data
+    # Separating the testing data
+    Y_test = testData[:len(testData)//2]  # First half is the unaltered data
+    X_test = testData[len(testData)//2:]  # Second half is the deteriorated data
 
     # Adjusting shapes for Keras input  # TODO: make into a function ?
     X_train = np.array([x for x in X_train])
     Y_train = np.array([x for x in Y_train])
-    validateTestData = np.array([x for x in validateTestData])
-    trainingTestData = np.array([x for x in trainingTestData])
+    Y_test = np.array([x for x in Y_test])
+    X_test = np.array([x for x in X_test])
 
     # # Sanity check: display four images (2x HR/LR)
     # plt.figure(figsize=(10, 10))
@@ -70,10 +69,10 @@ def setUpData(trainData, testData):
     #     plt.imshow(X_train[i], cmap=plt.cm.binary)
     # plt.show()
 
-    setUpModel(X_train, Y_train, trainingTestData, validateTestData)
+    setUpModel(X_train, Y_train, X_test, Y_test)
 
 
-# see: https://keras.io/preprocessing/image/
+# TODO: https://keras.io/preprocessing/image/
 def dataAugmentation(dataToAugment):
     print("Starting to augment data")
     arrayToFill = []
@@ -98,7 +97,7 @@ def dataAugmentation(dataToAugment):
     for i in range(len(arrayToFill)):
         arrayToFill.append(np.flipud(arrayToFill[i]))
 
-    # downsizing by scale of 4   (-> 64 images of 350x350x3)
+    # downsizing by scale of 4   (-> 64 images of 128x128x3)
     for i in range(len(arrayToFill)):
         arrayToFill.append(skimage.transform.resize(
             arrayToFill[i],
@@ -114,6 +113,13 @@ def dataAugmentation(dataToAugment):
     # plt.show()
 
     return np.array(arrayToFill)
+
+
+
+
+
+
+
 
 
     ###########################

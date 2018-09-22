@@ -11,7 +11,7 @@ from constants import scale_fact
 from train import train
 
 
-def setUpModel(X_train, Y_train, validateTestData, trainingTestData):
+def setUpModel(X_train, Y_train, X_test, Y_test):
 
     # # exemple de merge de deux networks: merge = concatenate([network1, network2])
     # # exemple de deux inputs pour un seul model: model = Model(inputs=[visible1, visible2], outputs=output)
@@ -36,7 +36,7 @@ def setUpModel(X_train, Y_train, validateTestData, trainingTestData):
 
     conv2 = Conv2D(filters, kernel_size, strides=strides, padding='same')(res_rec)
     a = Add()([conv1, conv2])
-    up = UpSampling2D(size=scale_fact)(a)
+    up = UpSampling2D(size=scale_fact)(a)  # TODO: try "Conv2DTranspose"
     outputLayer = Conv2D(filters=3,
                          kernel_size=1,
                          strides=1,
@@ -48,4 +48,4 @@ def setUpModel(X_train, Y_train, validateTestData, trainingTestData):
     print(model.summary())
     plot_model(model, to_file='CNN_graph.png')
 
-    train(model, X_train, Y_train, validateTestData, trainingTestData)
+    train(model, X_train, Y_train, X_test, Y_test)

@@ -4,7 +4,7 @@ from PIL import Image
 
 
 def main():
-    fig = plt.figure(figsize=(10, 10)) # size of images in INCHES           TODO: change to pixel-ratio
+    fig = plt.figure(figsize=(10, 10))  # size of images in INCHES
 
     origImg = mpimg.imread('pictures/Moi.jpg')
 

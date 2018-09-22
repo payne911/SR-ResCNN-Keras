@@ -1,12 +1,21 @@
 # SR-ResCNN
 A Keras implementation of a Super-Resolution Residual Convolutional Neural Network.
 
-The goal is to obtain a network that successfully increase the resolution of an image by filling the gaps in a manner that outperforms the generic "bicubic" method.
+The goal is to obtain a network that successfully increases the resolution of an image by filling the gaps in a manner that outperforms the generic "bicubic" method.
 
 # Warning
-This is still a Work In Progress. Do not expect this to work.
+This is still a Work In Progress. There are high probabilities of this project to be buggy. :)
 
-For future reference (to myself), build a proper README.md with [this](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2).
+### TODO
+
+Notes to self.
+
+```
+* Integrate TensorBoard
+* Use DIV2K dataset for training
+* Integrate Save/Load of Model Checkpoints
+* Make a proper README.md with this @ https://gist.github.com/PurpleBooth/109311bb0361f32d87a2
+```
 
 ## Getting Started
 
@@ -28,6 +37,7 @@ keras
 
 * [PyCharm](https://www.jetbrains.com/pycharm/) - The IDE used
 * [Keras](https://keras.io/) - The wrapper on TensorFlow framework
+* [Python 3.6](https://www.python.org/downloads/release/python-360/)
 
 ## Author
 

@@ -20,5 +20,5 @@ res_blocks = 3  # actual amount - 1
 ############################
 ##        TRAINING        ##
 ############################
-epochs     = 2
+epochs     = 5
 batch_size = 1  # 32 images -> 32 batches
