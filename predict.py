@@ -3,7 +3,7 @@ import numpy as np
 
 def predict(model, trainingTestData):
 
-    print(trainingTestData.shape)
+    print(trainingTestData.shape)  # (4, 128, 128, 3)
 
     # Trying to make predictions on a single image
     predictions = model.predict_on_batch(trainingTestData)

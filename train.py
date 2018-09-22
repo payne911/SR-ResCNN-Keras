@@ -1,7 +1,5 @@
 import tensorflow as tf
 
-import matplotlib.pyplot as plt
-
 from predict import predict
 from constants import epochs
 from constants import batch_size
