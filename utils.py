@@ -13,31 +13,19 @@ from model import setUpModel
 
 def setUpImages():
 
-    # Setting up paths
-    path1  = data_path + 'Moi.jpg'
-    path2  = data_path + 'ASaucerfulOfSecrets.jpg'
-    path3  = data_path + 'AtomHeartMother.jpg'
-    path4  = data_path + 'Animals.jpg'
-    path5  = data_path + 'DivisionBell.jpg'          # validator
-    path6  = data_path + 'lighter.jpg'
-    path7  = data_path + 'Meddle.jpg'                # validator
-    path8  = data_path + 'ObscuredByClouds.jpg'      # validator
-    path9  = data_path + 'TheDarkSideOfTheMoon.jpg'
-    path10 = data_path + 'TheWall.jpg'
-    path11 = data_path + 'WishYouWereHere.jpg'
+    train = []
+    finalTest = []
 
-    # Extracting images (1400x1400)
-    train = [mpimg.imread(path1),
-             mpimg.imread(path2),
-             mpimg.imread(path3),
-             mpimg.imread(path4),
-             mpimg.imread(path6),
-             mpimg.imread(path9),
-             mpimg.imread(path10),
-             mpimg.imread(path11)]
-    finalTest = [mpimg.imread(path5),
-                 mpimg.imread(path8),
-                 mpimg.imread(path7)]
+    sample_amnt = 11
+    max_amnt = 13
+
+    # Extracting images (512x512)
+    for i in range(sample_amnt):
+        train.append(mpimg.imread(data_path + str(i) + '.jpg'))
+
+    # for i in range(max_amnt-sample_amnt): TODO: revert this after done testing with memory problem on PREDICT/EVAL
+    #     finalTest.append(mpimg.imread(data_path + str(i+sample_amnt) + '.jpg'))
+    finalTest.append(mpimg.imread(data_path + str(13) + '.jpg'))
 
     # Augmenting data
     trainData = dataAugmentation(train)
@@ -62,13 +50,15 @@ def setUpData(trainData, testData):
     Y_train = trainData[:len(trainData)//2]    # First half is the unaltered data
     X_train = trainData[len(trainData)//2:]    # Second half is the deteriorated data
 
-    # Separating the testing data TODO: rename variables to conventions?
+    # Separating the testing data  # TODO: rename variables to conventions?
     validateTestData = testData[:len(testData)//2]  # First half is the unaltered data
     trainingTestData = testData[len(testData)//2:]  # Second half is the deteriorated data
 
-    # Adjusting shapes for Keras input
+    # Adjusting shapes for Keras input  # TODO: make into a function ?
     X_train = np.array([x for x in X_train])
     Y_train = np.array([x for x in Y_train])
+    validateTestData = np.array([x for x in validateTestData])
+    trainingTestData = np.array([x for x in trainingTestData])
 
     # # Sanity check: display four images (2x HR/LR)
     # plt.figure(figsize=(10, 10))
@@ -80,7 +70,7 @@ def setUpData(trainData, testData):
     #     plt.imshow(X_train[i], cmap=plt.cm.binary)
     # plt.show()
 
-    setUpModel(X_train, Y_train, validateTestData, trainingTestData)
+    setUpModel(X_train, Y_train, trainingTestData, validateTestData)
 
 
 # see: https://keras.io/preprocessing/image/
@@ -124,3 +114,69 @@ def dataAugmentation(dataToAugment):
     # plt.show()
 
     return np.array(arrayToFill)
+
+
+    ###########################
+    #        DRAWINGS         #
+    ###########################
+
+# def plot_image(i, predictions_array, true_label, img):
+#     predictions_array, true_label, img = predictions_array[i], true_label[i], img[i]
+#     plt.grid(False)
+#     plt.xticks([])
+#     plt.yticks([])
+#
+#     plt.imshow(img, cmap=plt.cm.binary)
+#
+#     predicted_label = np.argmax(predictions_array)
+#     if predicted_label == true_label:
+#         color = 'blue'
+#     else:
+#         color = 'red'
+#
+#     plt.xlabel("{} {:2.0f}% ({})".format(class_names[predicted_label],
+#                                          100 * np.max(predictions_array),
+#                                          class_names[true_label]),
+#                color=color)
+#
+# def plot_value_array(i, predictions_array, true_label):
+#     predictions_array, true_label = predictions_array[i], true_label[i]
+#     plt.grid(False)
+#     plt.xticks([])
+#     plt.yticks([])
+#     thisplot = plt.bar(range(10), predictions_array, color="#777777")
+#     plt.ylim([0, 1])
+#     predicted_label = np.argmax(predictions_array)
+#     plt.xticks(range(10))  # adding the class-index below prediction graph
+#
+#     thisplot[predicted_label].set_color('red')
+#     thisplot[true_label].set_color('blue')
+#
+# # def draw_prediction(index):
+# #     plt.figure(figsize=(6, 3))
+# #     plt.subplot(1, 2, 1)
+# #     plot_image(index, predictions, test_labels, test_images)
+# #     plt.subplot(1, 2, 2)
+# #     plot_value_array(index, predictions, test_labels)
+# #     plt.show()
+# #
+# # To draw a single prediction
+# # draw_prediction(0)
+# # draw_prediction(12)
+#
+# # Plot the first X test images, their predicted label, and the true label
+# # Color correct predictions in blue, incorrect predictions in red
+# num_rows = 5
+# num_cols = 3
+# num_images = num_rows * num_cols
+# plt.figure(figsize=(2 * 2 * num_cols, 2 * num_rows))
+
+# Adding a title to the plot
+# plt.suptitle("Check it out!")
+
+# for i in range(num_images):
+#     plt.subplot(num_rows, 2 * num_cols, 2 * i + 1)
+#     plot_image(i, predictions, test_labels, test_images)
+#     plt.subplot(num_rows, 2 * num_cols, 2 * i + 2)
+#     plot_value_array(i, predictions, test_labels)
+# plt.show()

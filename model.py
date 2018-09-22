@@ -5,6 +5,8 @@ from keras.utils import plot_model
 from constants import img_width
 from constants import img_height
 from constants import img_depth
+from constants import res_blocks
+from constants import scale_fact
 
 from train import train
 
@@ -17,9 +19,8 @@ def setUpModel(X_train, Y_train, validateTestData, trainingTestData):
     filters = 256
     kernel_size = 3
     strides = 1
-    factor = 4  # the factor of upscaling
 
-    inputLayer = Input(shape=(img_height//factor, img_width//factor, img_depth))
+    inputLayer = Input(shape=(img_height//scale_fact, img_width//scale_fact, img_depth))
     conv1 = Conv2D(filters, kernel_size, strides=strides, padding='same')(inputLayer)
 
     res = Conv2D(filters, kernel_size, strides=strides, padding='same')(conv1)
@@ -27,7 +28,7 @@ def setUpModel(X_train, Y_train, validateTestData, trainingTestData):
     res = Conv2D(filters, kernel_size, strides=strides, padding='same')(act)
     res_rec = Add()([conv1, res])
 
-    for i in range(15):  # 16-1
+    for i in range(res_blocks):
         res1 = Conv2D(filters, kernel_size, strides=strides, padding='same')(res_rec)
         act = ReLU()(res1)
         res2 = Conv2D(filters, kernel_size, strides=strides, padding='same')(act)
@@ -35,7 +36,7 @@ def setUpModel(X_train, Y_train, validateTestData, trainingTestData):
 
     conv2 = Conv2D(filters, kernel_size, strides=strides, padding='same')(res_rec)
     a = Add()([conv1, conv2])
-    up = UpSampling2D(size=4)(a)
+    up = UpSampling2D(size=scale_fact)(a)
     outputLayer = Conv2D(filters=3,
                          kernel_size=1,
                          strides=1,
