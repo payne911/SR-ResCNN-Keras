@@ -20,6 +20,8 @@ def setUpModel(X_train, Y_train, X_test, Y_test):
     kernel_size = 3
     strides = 1
 
+    # TODO: To visualize internal layers (https://stackoverflow.com/questions/41711190/keras-how-to-get-the-output-of-each-layer/41712013#41712013)
+
     inputLayer = Input(shape=(img_height//scale_fact, img_width//scale_fact, img_depth))
     conv1 = Conv2D(filters, kernel_size, strides=strides, padding='same')(inputLayer)
 
