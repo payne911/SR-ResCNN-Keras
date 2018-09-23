@@ -11,7 +11,7 @@ This is still a Work In Progress. There are high probabilities of this project t
 Notes to self.
 
 ```
-* Integrate TensorBoard
+* Better integrate TensorBoard (proper feature/image visualization)
 * Use DIV2K dataset for training
 * Use Keras ImagePreProcessing object
 * Integrate Save/Load of Model Checkpoints
@@ -20,7 +20,7 @@ Notes to self.
 
 # Demonstration
 
-Here is a simple image of the current progress made:
+Here is a simple image of the current progress made (trained with 11 images that were data-augmented):
 
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results.png)
 
