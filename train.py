@@ -1,4 +1,5 @@
 import tensorflow as tf
+from keras.callbacks import TensorBoard
 
 from predict import predict
 from constants import epochs
@@ -17,13 +18,16 @@ def train(model, X_train, Y_train, X_test, Y_test):
     # tf_device.list_devices()
 
     # TODO: add TensorBoard (https://keras.io/callbacks/#tensorboard)
+    tbCallBack = TensorBoard(log_dir='./logs', histogram_freq=1, write_graph=True, write_images=True)
+
     model.fit(X_train,
               Y_train,
               epochs=epochs,  # TODO is it multi-fold testing?
               verbose=2,
               shuffle=False,
               #validation_data=(X_test, Y_test),  # TODO: verify this is a good idea to integrate there?
-              batch_size=batch_size)
+              batch_size=batch_size,
+              callbacks=[tbCallBack])
     # TODO: add save/load (https://keras.io/callbacks/#modelcheckpoint)
 
     # evaluate(model, X_test, Y_test)  # TODO: fix memory problem
