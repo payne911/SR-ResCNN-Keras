@@ -17,8 +17,18 @@ def train(model, X_train, Y_train, X_test, Y_test):
     # tf_device = tf.Session(config=tf.ConfigProto(log_device_placement=True))
     # tf_device.list_devices()
 
-    # TODO: add TensorBoard (https://keras.io/callbacks/#tensorboard)
-    tbCallBack = TensorBoard(log_dir='./logs', histogram_freq=1, write_graph=True, write_images=True)
+    # Setting up Callbacks
+    tbCallBack = TensorBoard(log_dir='./logs',  # TODO: add TensorBoard (https://keras.io/callbacks/#tensorboard)
+                             histogram_freq=1,
+                             write_graph=True,
+                             write_images=True,
+                             write_grads=True,
+                             batch_size=batch_size,
+                             embeddings_freq=1)
+
+    # TODO: add "Reduced Learning Rate" (https://keras.io/callbacks/#ReduceLROnPlateau)
+    # keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, verbose=0, mode='auto',
+    #                                   min_delta=0.0001, cooldown=0, min_lr=0)
 
     model.fit(X_train,
               Y_train,
@@ -29,6 +39,7 @@ def train(model, X_train, Y_train, X_test, Y_test):
               batch_size=batch_size,
               callbacks=[tbCallBack])
     # TODO: add save/load (https://keras.io/callbacks/#modelcheckpoint)
+
 
     # evaluate(model, X_test, Y_test)  # TODO: fix memory problem
     predict(model, X_test, Y_test)
