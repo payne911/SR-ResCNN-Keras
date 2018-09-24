@@ -1,7 +1,5 @@
 import numpy as np
 
-from keras.preprocessing.image import ImageDataGenerator
-
 import matplotlib.image as mpimg
 import skimage
 from skimage import transform
@@ -16,7 +14,7 @@ from model import setUpModel
 def setUpImages():
 
     train = []
-    finalTest = []
+    test = []
 
     sample_amnt = 11
     max_amnt = 13
@@ -26,32 +24,16 @@ def setUpImages():
         train.append(mpimg.imread(data_path + str(i) + '.jpg'))
 
     for i in range(max_amnt-sample_amnt):
-        finalTest.append(mpimg.imread(data_path + str(i+sample_amnt) + '.jpg'))
-
-    # # TODO: https://keras.io/preprocessing/image/
-    # ImageDataGenerator(featurewise_center=False, samplewise_center=False, featurewise_std_normalization=False,
-    #                    samplewise_std_normalization=False, zca_whitening=False, zca_epsilon=1e-06, rotation_range=0,
-    #                    width_shift_range=0.0, height_shift_range=0.0, brightness_range=None, shear_range=0.0,
-    #                    zoom_range=0.0, channel_shift_range=0.0, fill_mode='nearest', cval=0.0, horizontal_flip=False,
-    #                    vertical_flip=False, rescale=None, preprocessing_function=None, data_format=None,
-    #                    validation_split=0.0, dtype=None)
+        test.append(mpimg.imread(data_path + str(i+sample_amnt) + '.jpg'))
 
     # Augmenting data
     trainData = dataAugmentation(train)
-    testData  = dataAugmentation(finalTest)
+    testData  = dataAugmentation(test)
 
     setUpData(trainData, testData)
 
 
 def setUpData(trainData, testData):
-
-    # print(type(trainData))                          # <class 'numpy.ndarray'>
-    # print(len(trainData))                           # 64
-    # print(type(trainData[0]))                       # <class 'numpy.ndarray'>
-    # print(trainData[0].shape)                       # (1400, 1400, 3)
-    # print(trainData[len(trainData)//2-1].shape)     # (1400, 1400, 3)
-    # print(trainData[len(trainData)//2].shape)       # (350, 350, 3)
-    # print(trainData[len(trainData)-1].shape)        # (350, 350, 3)
 
     # TODO: substract mean of all images to all images
 
@@ -82,7 +64,6 @@ def setUpData(trainData, testData):
     setUpModel(X_train, Y_train, X_test, Y_test)
 
 
-# TODO: possibly remove once Keras Preprocessing is integrated?
 def dataAugmentation(dataToAugment):
     print("Starting to augment data")
     arrayToFill = []

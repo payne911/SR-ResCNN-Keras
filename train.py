@@ -1,5 +1,5 @@
 import tensorflow as tf
-from keras.callbacks import TensorBoard
+from callbacks import get_callbacks
 
 from predict import predict
 from constants import epochs
@@ -17,19 +17,6 @@ def train(model, X_train, Y_train, X_test, Y_test):
     # tf_device = tf.Session(config=tf.ConfigProto(log_device_placement=True))
     # tf_device.list_devices()
 
-    # Setting up Callbacks
-    # (ml-gpu) C:\Users\payne\Documents\GitHub\PixelEnhancer\SR-ResCNN-Keras-\logs>tensorboard --logdir .
-    tbCallBack = TensorBoard(log_dir='./logs',
-                             histogram_freq=1,
-                             write_graph=True,
-                             write_images=True,
-                             write_grads=True,
-                             batch_size=batch_size)
-
-    # TODO: add "Reduced Learning Rate" (https://keras.io/callbacks/#ReduceLROnPlateau)
-    # keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, verbose=0, mode='auto',
-    #                                   min_delta=0.0001, cooldown=0, min_lr=0)
-
     model.fit(X_train,
               Y_train,
               epochs=epochs,  # TODO is it multi-fold testing?
@@ -37,9 +24,8 @@ def train(model, X_train, Y_train, X_test, Y_test):
               shuffle=False,
               validation_data=(X_test, Y_test),  # TODO: verify this is a good idea to integrate there?
               batch_size=batch_size,
-              callbacks=[tbCallBack])
+              callbacks=get_callbacks())
     # TODO: add save/load (https://keras.io/callbacks/#modelcheckpoint)
-
 
     # evaluate(model, X_test, Y_test)  # TODO: fix memory problem
     predict(model, X_test, Y_test)
