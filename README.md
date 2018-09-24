@@ -36,7 +36,7 @@ You will need a virtual environment that contains the following packages:
 tensorflow
 numpy
 matplotlib
-skimage
+scikit-image (skimage)
 keras
 pillow
 ```
