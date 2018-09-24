@@ -1,13 +1,11 @@
 ############################
 ##       UTILS (img)      ##
 ############################
-# data_path  = 'pictures/1400/'
-# img_width  = 1400
-# img_height = 1400
-data_path  = 'pictures/512/'  # TODO: modify
-img_width  = 512
-img_height = 512
-augment_im = True
+y_data_path = 'pictures/512/'  # TODO: modify
+x_data_path = 'pictures/HR/test_outputs/128'
+img_width   = 512
+img_height  = 512
+augment_im  = True
 
 
 ############################

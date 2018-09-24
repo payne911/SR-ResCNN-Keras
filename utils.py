@@ -4,7 +4,7 @@ import matplotlib.image as mpimg
 import skimage
 from skimage import transform
 
-from constants import data_path
+from constants import y_data_path
 from constants import img_width
 from constants import img_height
 
@@ -21,10 +21,10 @@ def setUpImages():
 
     # Extracting images (512x512)
     for i in range(sample_amnt):
-        train.append(mpimg.imread(data_path + str(i) + '.jpg'))
+        train.append(mpimg.imread(y_data_path + str(i) + '.jpg'))
 
     for i in range(max_amnt-sample_amnt):
-        test.append(mpimg.imread(data_path + str(i+sample_amnt) + '.jpg'))
+        test.append(mpimg.imread(y_data_path + str(i + sample_amnt) + '.jpg'))
 
     # Augmenting data
     trainData = dataAugmentation(train)
