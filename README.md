@@ -38,6 +38,7 @@ numpy
 matplotlib
 skimage
 keras
+pillow
 ```
 
 ## Built With
