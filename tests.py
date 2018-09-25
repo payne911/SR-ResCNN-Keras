@@ -181,4 +181,8 @@ def predict(model, x_test, y_test):
     plt.title("HR version: 512x512")
     plt.imshow(y_test2, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
+    # See: https://stackoverflow.com/a/30946248/9768291
+    # plt.imsave('test.png', data, cmap = plt.cm.gray)  TODO: https://matplotlib.org/api/image_api.html#matplotlib.image.imsave
+    # plt.savefig('results.png')                        TODO: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.savefig
+
     plt.show()
