@@ -24,8 +24,9 @@ def get_callbacks():
     # keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, verbose=0, mode='auto',
     #                                   min_delta=0.0001, cooldown=0, min_lr=0)
 
-    #return [tbCallBack, tbi_callback] TODO: re-add once the BoardImage issue is sorted out
-    return [tbCallBack]
+    #return [tbCallBack, tbi_callback]  TODO: re-add once the BoardImage issue is sorted out
+    #return [tbCallBack]  TODO: currently too slow...
+    return []
 
 
 def make_image(tensor):
