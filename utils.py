@@ -1,104 +1,83 @@
 import numpy as np
+#import matplotlib.pyplot as plt
 
-import matplotlib.image as mpimg
 import skimage
 from skimage import transform
+from skimage import io
+from PIL import Image
+import glob
 
 from constants import y_data_path
 from constants import img_width
 from constants import img_height
+from constants import scale_fact
 
 from model import setUpModel
 
 
-def setUpImages():
-
-    train = []
-    test = []
-
-    sample_amnt = 11
-    max_amnt = 13
-
-    # Extracting images (512x512)
-    for i in range(sample_amnt):
-        train.append(mpimg.imread(y_data_path + str(i) + '.jpg'))
-
-    for i in range(max_amnt-sample_amnt):
-        test.append(mpimg.imread(y_data_path + str(i + sample_amnt) + '.jpg'))
-
-    # Augmenting data
-    trainData = dataAugmentation(train)
-    testData  = dataAugmentation(test)
-
-    setUpData(trainData, testData)
+def loadData():
+    images = [skimage.io.imread(path) for path in glob.glob(y_data_path + "*.png")]  # TODO: customize with command line
+    setUpData(np.array(images))
 
 
-def setUpData(trainData, testData):
+def float_im(img):
+    return np.divide(img, 255.)
 
-    # TODO: substract mean of all images to all images
 
-    # Separating the training data
-    Y_train = trainData[:len(trainData)//2]    # First half is the unaltered data
-    X_train = trainData[len(trainData)//2:]    # Second half is the deteriorated data
+# TODO: provide some way of saving FLOAT images
+def save_np_img(np_img, path, name):
+    """
+    To save the image.
+    :param np_img: numpy_array type image
+    :param path: string type of the existing path where to save the image
+    :param name: string type that includes the format (ex:"bob.png")
+    :return: numpy array
+    """
 
-    # Separating the testing data
-    Y_test = testData[:len(testData)//2]  # First half is the unaltered data
-    X_test = testData[len(testData)//2:]  # Second half is the deteriorated data
+    assert isinstance(path, str), 'Path of wrong type! (Must be String)'
+    assert isinstance(name, str), 'Name of wrong type! (Must be String)'
 
-    # Adjusting shapes for Keras input  # TODO: make into a function ?
-    X_train = np.array([x for x in X_train])
-    Y_train = np.array([x for x in Y_train])
-    Y_test = np.array([x for x in Y_test])
-    X_test = np.array([x for x in X_test])
+    im = Image.fromarray(np_img)
+    im.save(path + name)
 
-    # # Sanity check: display four images (2x HR/LR)
+    return np_img
+
+
+def downscale(images):
+    print("Downscaling training set")
+    x = []
+
+    for img in images:
+        x.append(single_downscale(img))
+
+    return np.array(x)
+
+
+def single_downscale(img):
+    scaled_img = skimage.transform.resize(
+        img,
+        (img_width // scale_fact, img_height // scale_fact),
+        mode='reflect',
+        anti_aliasing=True)
+
+    return scaled_img
+
+
+def setUpData(y_train):
+    print("Shape of the training set created:", y_train.shape)
+    x_train = downscale(y_train)
+
+    # # Sanity check: display eight images
     # plt.figure(figsize=(10, 10))
-    # for i in range(2):
-    #     plt.subplot(2, 2, i + 1)
-    #     plt.imshow(Y_train[i], cmap=plt.cm.binary)
-    # for i in range(2):
-    #     plt.subplot(2, 2, i + 1 + 2)
-    #     plt.imshow(X_train[i], cmap=plt.cm.binary)
+    # for i in range(4):
+    #     plt.subplot(3, 3, i + 1)
+    #     plt.imshow(y_train[i], cmap=plt.cm.binary)
+    # for i in range(4):
+    #     plt.subplot(3, 3, i + 1 + 4)
+    #     plt.imshow(x_train[i], cmap=plt.cm.binary)
     # plt.show()
 
-    setUpModel(X_train, Y_train, X_test, Y_test)
-
-
-def dataAugmentation(dataToAugment):
-    print("Starting to augment data")
-    arrayToFill = []
-
-    # faster computation with values between 0 and 1 ?
-    dataToAugment = np.divide(dataToAugment, 255.)
-
-    # TODO: switch from RGB channels to CbCrY
-
-    # adding the normal images   (8)
-    for i in range(len(dataToAugment)):
-        arrayToFill.append(dataToAugment[i])
-    # vertical axis flip         (-> 16)
-    for i in range(len(arrayToFill)):
-        arrayToFill.append(np.fliplr(arrayToFill[i]))
-    # horizontal axis flip       (-> 32)
-    for i in range(len(arrayToFill)):
-        arrayToFill.append(np.flipud(arrayToFill[i]))
-
-    # downsizing by scale of 4   (-> 64 images of 128x128x3)
-    for i in range(len(arrayToFill)):
-        arrayToFill.append(skimage.transform.resize(
-            arrayToFill[i],
-            (img_width/4, img_height/4),
-            mode='reflect',
-            anti_aliasing=True))
-
-    # # Sanity check: display the images
-    # plt.figure(figsize=(10, 10))
-    # for i in range(64):
-    #     plt.subplot(8, 8, i + 1)
-    #     plt.imshow(arrayToFill[i], cmap=plt.cm.binary)
-    # plt.show()
-
-    return np.array(arrayToFill)
+    setUpModel(x_train, y_train)
 
 
 
