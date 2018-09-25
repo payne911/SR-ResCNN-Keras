@@ -48,7 +48,7 @@ def extract_tests():
     y.append(y_test1)
     y.append(y_test2)
 
-    return x, y
+    return np.array(x), np.array(y)
 
 
 def evaluate(model, x_test, y_test):
