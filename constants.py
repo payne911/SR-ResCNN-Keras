@@ -1,8 +1,7 @@
 ############################
 ##       UTILS (img)      ##
 ############################
-y_data_path = 'pictures/512/'  # TODO: modify
-x_data_path = 'pictures/HR/test_outputs/128'
+y_data_path = 'pictures/HR/512/'  # TODO: modify
 img_width   = 512
 img_height  = 512
 augment_im  = True

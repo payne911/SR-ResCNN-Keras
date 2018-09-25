@@ -72,11 +72,6 @@ def dataAugmentation(dataToAugment):
     dataToAugment = np.divide(dataToAugment, 255.)
 
     # TODO: switch from RGB channels to CbCrY
-    # # TODO: Try GrayScale
-    # trainingData = np.array(
-    #     [(cv2.cvtColor(np.uint8(x * 255), cv2.COLOR_BGR2GRAY) / 255).reshape(350, 350, 1) for x in trainingData])
-    # validateData = np.array(
-    #     [(cv2.cvtColor(np.uint8(x * 255), cv2.COLOR_BGR2GRAY) / 255).reshape(1400, 1400, 1) for x in validateData])
 
     # adding the normal images   (8)
     for i in range(len(dataToAugment)):
