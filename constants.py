@@ -12,8 +12,8 @@ prepare_im  = False
 ##         MODEL          ##
 ############################
 save_model = True
-img_width   = 512
-img_height  = 512
+img_width  = 512
+img_height = 512
 img_depth  = 3
 scale_fact = 4
 res_blocks = 3  # a power of 2, minus 1
