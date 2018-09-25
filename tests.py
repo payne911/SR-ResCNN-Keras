@@ -53,6 +53,12 @@ def extract_tests():
 
 def evaluate(model, x_test, y_test):
     print("Starting evaluation.")
+    # TODO: evaluate separately?
+    print(type(x_test))
+    print(x_test.shape)
+    print(type(y_test))
+    print(y_test.shape)
+    # ValueError: Error when checking model input: the list of Numpy arrays that you are passing to your model is not the size the model expected. Expected to see 1 array(s), but instead got the following list of 4 arrays: [array([[[1.        , 0.95686275, 0.71764706],
     test_loss, test_acc = model.evaluate(x_test,
                                          y_test,
                                          batch_size=batch_size,
