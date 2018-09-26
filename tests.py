@@ -1,7 +1,3 @@
-import os
-from constants import save_dir
-from constants import weights
-
 import numpy as np
 import matplotlib.pyplot as plt
 import skimage
@@ -14,6 +10,8 @@ from constants import img_height
 from constants import scale_fact
 from constants import batch_size
 from constants import verbosity
+from constants import save_dir
+from constants import weights
 
 
 def test(model):
