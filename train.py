@@ -9,9 +9,10 @@ from constants import batch_size
 
 # TODO: eventually look into https://blog.keras.io/building-powerful-image-classification-models-using-very-little-data.html
 def train(model, x_train, y_train):
+    print("Training is starting.")
 
     model.compile(optimizer=tf.train.AdamOptimizer(),
-                  loss='mean_squared_error')  # TODO: Customize loss function?
+                  loss='mean_squared_error')  # TODO: MS-SSIM loss (https://stackoverflow.com/a/51667654/9768291)
     # TODO: add custom metrics (https://keras.io/metrics/)
 
     # # To verify if GPU is recognized

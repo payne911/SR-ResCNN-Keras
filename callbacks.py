@@ -74,3 +74,16 @@ class TensorBoardImage(Callback):
         writer.close()
 
         return
+
+
+class PeriodicLogger(Callback):
+
+    def on_train_begin(self, logs={}):
+        # Initialization code
+        self.epochs = 0
+
+    def on_epoch_end(self, batch, logs={}):
+        self.epochs += 1
+        if self.epochs % 2 == 0:
+            # Do stuff like printing metrics
+            print("bob")

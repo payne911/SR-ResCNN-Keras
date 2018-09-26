@@ -72,6 +72,4 @@ def load_imgs(path):
     # Saving images after randomly cropping parts
     y_train = random_crop(images)
 
-    # TODO: Substract mean of all images
-
     setUpData(y_train)

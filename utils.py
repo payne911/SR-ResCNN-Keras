@@ -16,7 +16,8 @@ from model import setUpModel
 
 
 def loadData():
-    images = [skimage.io.imread(path) for path in glob.glob(y_data_path + "*.png")]  # TODO: customize with command line
+    print("Loading data.")
+    images = [float_im(skimage.io.imread(path)) for path in glob.glob(y_data_path + "*.png")]  # TODO: customize with command line
     setUpData(np.array(images))
 
 
@@ -37,6 +38,16 @@ def save_np_img(np_img, path, name):
     assert isinstance(path, str), 'Path of wrong type! (Must be String)'
     assert isinstance(name, str), 'Name of wrong type! (Must be String)'
 
+    # TODO: To transform float-arrays into int-arrays (see https://stackoverflow.com/questions/52490653/saving-float-numpy-images)
+    if type(np_img[0][0][0].item()) != int:
+        np_img = np.multiply(np_img, 255).astype(int)
+        # File "C:\Users\payne\Anaconda3\envs\ml-gpu\lib\site-packages\PIL\Image.py", line 2460, in fromarray
+        #     mode, rawmode = _fromarray_typemap[typekey]
+        # KeyError: ((1, 1, 3), '<i4')
+        # File  "C:\Users\payne\Anaconda3\envs\ml-gpu\lib\site-packages\PIL\Image.py", line 2463, in fromarray
+        #     raise TypeError("Cannot handle this data type")
+        # TypeError: Cannot handle this data type
+
     im = Image.fromarray(np_img)
     im.save(path + name)
 
@@ -44,7 +55,7 @@ def save_np_img(np_img, path, name):
 
 
 def downscale(images):
-    print("Downscaling training set")
+    print("Downscaling training set.")
     x = []
 
     for img in images:
@@ -54,6 +65,12 @@ def downscale(images):
 
 
 def single_downscale(img):
+    """
+    Downscales an image by the factor set in the 'constants'
+    :param img: the image
+    :return: returns a float-type numpy by default (values between 0 and 1)
+    """
+    # TODO: look into `skimage.transform.downscale_local_mean()`
     scaled_img = skimage.transform.resize(
         img,
         (img_width // scale_fact, img_height // scale_fact),
@@ -63,9 +80,12 @@ def single_downscale(img):
     return scaled_img
 
 
+# TODO: Use Keras "ImageDataGenerator" (https://stackoverflow.com/a/52462868/9768291) (https://stackoverflow.com/a/43382171/9768291)
 def setUpData(y_train):
     print("Shape of the training set created:", y_train.shape)
     x_train = downscale(y_train)
+
+    # TODO: Substract mean of all images
 
     # # Sanity check: display eight images
     # plt.figure(figsize=(10, 10))

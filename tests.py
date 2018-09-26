@@ -13,13 +13,14 @@ from constants import verbosity
 
 
 def test(model):
-    print("Starting tests. Extracting images to feed.")
     x_test, y_test = extract_tests()
+
+    evaluate(model, x_test, y_test)
     predict(model, x_test, y_test)
-    evaluate(model, x_test, y_test)  # TODO: once evaluate is stable, put BEFORE 'predict' ?
 
 
 def extract_tests():
+    print("Starting tests. Extracting images to feed.")
     x = []
     y = []
 
@@ -53,18 +54,14 @@ def extract_tests():
 
 def evaluate(model, x_test, y_test):
     print("Starting evaluation.")
-    # TODO: evaluate separately?
-    print(type(x_test))
-    print(x_test.shape)
-    print(type(y_test))
-    print(y_test.shape)
-    # ValueError: Error when checking model input: the list of Numpy arrays that you are passing to your model is not the size the model expected. Expected to see 1 array(s), but instead got the following list of 4 arrays: [array([[[1.        , 0.95686275, 0.71764706],
-    test_loss, test_acc = model.evaluate(x_test,
-                                         y_test,
-                                         batch_size=batch_size,
-                                         verbose=verbosity)
+
+    test_loss = model.evaluate(x_test,
+                               y_test,
+                               batch_size=batch_size,
+                               verbose=verbosity)
+
     print('[evaluate] Test loss:', test_loss)
-    print('[evaluate] Test accuracy:', test_acc)
+    #print('[evaluate] Test accuracy:', test_acc)
 
     # score = model.evaluate(x_test, y_test, verbose=False)
     # model.metrics_names
@@ -77,7 +74,10 @@ def crop_center(img, crop_x, crop_y):
     y, x, _ = img.shape
     start_x = x//2-(crop_x // 2)
     start_y = y//2-(crop_y // 2)
-    return utils.float_im(img[start_y:start_y + crop_y, start_x:start_x + crop_x])
+
+    cropped_img = img[start_y:start_y + crop_y, start_x:start_x + crop_x]
+
+    return utils.float_im(cropped_img)
 
 
 def predict(model, x_test, y_test):
@@ -97,19 +97,15 @@ def predict(model, x_test, y_test):
 
     # Extracting predictions
     predictions = []
-    print("Predicting on 1st input")
     input_img = (np.expand_dims(x_test1, 0))    # Add the image to a batch where it's the only member
     prediction1 = model.predict(input_img)[0]   # returns a list of lists, one for each image in the batch of data
     predictions.append(prediction1)
-    print("Predicting on 2nd input")
     input_img = (np.expand_dims(x_test2, 0))
     prediction2 = model.predict(input_img)[0]
     predictions.append(prediction2)
-    print("Predicting on 3rd input")
     input_img = (np.expand_dims(x_test3, 0))
     prediction3 = model.predict(input_img)[0]
     predictions.append(prediction3)
-    print("Predicting on 4th input")
     input_img = (np.expand_dims(x_test4, 0))
     prediction4 = model.predict(input_img)[0]
     predictions.append(prediction4)
@@ -119,7 +115,7 @@ def predict(model, x_test, y_test):
     # save_path = "pictures/final_tests/predictions/"
     # print("Saving the 4 outputs as images")
     # for pred in predictions:
-    #     utils.save_np_img(pred, save_path, str(i) + ".png")  # TODO: this function can't save FLOAT images
+    #     utils.save_np_img(pred, save_path, str(i) + ".png")
     #     i += 1
 
 
@@ -147,16 +143,16 @@ def predict(model, x_test, y_test):
 
     # bicubic enlargment  TODO: remove duplicate (input img) placeholder
     plt.subplot(4, 4, 5)
-    plt.title("WIP (ignore): 512x512")
+    plt.title("WIP (ignore)")
     plt.imshow(x_test1, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
     plt.subplot(4, 4, 6)
-    plt.title("WIP (ignore): 512x512")
+    plt.title("WIP (ignore)")
     plt.imshow(x_test2, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
     plt.subplot(4, 4, 7)
-    plt.title("WIP (ignore): 512x512")
+    plt.title("WIP (ignore)")
     plt.imshow(x_test3, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
     plt.subplot(4, 4, 8)
-    plt.title("WIP (ignore): 512x512")
+    plt.title("WIP (ignore)")
     plt.imshow(x_test4, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     # predicted image (x4 through network)
@@ -187,8 +183,23 @@ def predict(model, x_test, y_test):
     plt.title("HR version: 512x512")
     plt.imshow(y_test2, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
-    # See: https://stackoverflow.com/a/30946248/9768291
-    # plt.imsave('test.png', data, cmap = plt.cm.gray)  TODO: https://matplotlib.org/api/image_api.html#matplotlib.image.imsave
-    # plt.savefig('results.png')                        TODO: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.savefig
+    plt.show()
+
+    # https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.savefig
+    # plt.savefig('pictures/final_tests/predictions/results.png', frameon=True) TODO: not working (white image)
+
+    # Showing output vs expected image
+    plt.figure(figsize=(20, 20))
+    plt.suptitle("Results")
+    # input image
+    plt.subplot(1, 3, 1)
+    plt.title("Input: 128x128")
+    plt.imshow(x_test3, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
+    plt.subplot(1, 3, 2)
+    plt.title("Output: 512x512")
+    plt.imshow(prediction3, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
+    plt.subplot(1, 3, 3)
+    plt.title("HR version: 512x512")
+    plt.imshow(y_test1, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     plt.show()
