@@ -39,6 +39,7 @@ matplotlib
 scikit-image (skimage)
 keras
 pillow
+hdf5 (h5py?)
 ```
 
 ## Built With

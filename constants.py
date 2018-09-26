@@ -9,6 +9,14 @@ prepare_im  = False
 
 
 ############################
+##       SAVE/LOAD        ##
+############################
+save_dir   = 'save'
+model_json = 'model_architecture.json'
+weights    = 'model_weights.h5'
+
+
+############################
 ##         MODEL          ##
 ############################
 save_model = True

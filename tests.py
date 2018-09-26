@@ -1,3 +1,7 @@
+import os
+from constants import save_dir
+from constants import weights
+
 import numpy as np
 import matplotlib.pyplot as plt
 import skimage
@@ -203,3 +207,10 @@ def predict(model, x_test, y_test):
     plt.imshow(y_test1, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     plt.show()
+
+    # Prompt to save the weights
+    save_path = save_dir + '/' + weights
+    print(save_path)
+    save_bool = input("Save weights of this model (y/n) ?")
+    if save_bool == "y":
+        model.save_weights('save/model_weights.h5')
