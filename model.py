@@ -71,11 +71,9 @@ def setUpModel(x_train, y_train):
     print(model.summary())
     plot_model(model, to_file='CNN_graph.png')
 
-    # Save the model architecture
+    # Save the model architecture (JSON)
     model_path = save_dir + '/' + model_json
-    print(model_path)
     with open(model_path, 'w') as f:
-        print("saving model to json")
         f.write(model.to_json())
 
     # from keras.models import model_from_json
@@ -85,9 +83,8 @@ def setUpModel(x_train, y_train):
 
     # Load weights into the new model
     save_path = save_dir + '/' + weights
-    print(save_path)
     if os.path.isfile(save_path):
-        print("weights exists: loading them")
+        print("Loading weights from previously saved model.")
         model.load_weights(save_path)
 
     train(model, x_train, y_train)
