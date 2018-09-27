@@ -13,6 +13,9 @@ from constants import img_height
 from constants import scale_fact
 
 from model import setUpModel
+from model import load_saved_model
+from constants import model_saved
+from constants import model_name
 
 
 def loadData():
@@ -97,7 +100,10 @@ def setUpData(y_train):
     #     plt.imshow(x_train[i], cmap=plt.cm.binary)
     # plt.show()
 
-    setUpModel(x_train, y_train)
+    if model_saved:
+        load_saved_model(model_name, x_train, y_train)
+    else:
+        setUpModel(x_train, y_train)
 
 
 

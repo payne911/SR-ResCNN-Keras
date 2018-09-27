@@ -1,17 +1,19 @@
-import os.path
-from constants import save_dir
-from constants import model_json
-from constants import weights
+# import os.path
+# from constants import save_dir
+# from constants import model_json
+# from constants import weights
 
 from keras.layers import *
 from keras.models import Model
 from keras.utils import plot_model
+from keras.models import load_model
 
 from constants import img_width
 from constants import img_height
 from constants import img_depth
 from constants import res_blocks
 from constants import scale_fact
+from constants import save_dir
 
 from train import train
 
@@ -50,8 +52,8 @@ def setUpModel(x_train, y_train):
 
     # Tail module
     conv = Conv2D(filters, kernel_size, strides=strides, padding='same')(add)
-    act = ReLU()(conv)
-    up  = UpSampling2D(size=scale_fact if scale_fact != 4 else 2)(act)  # TODO: try "Conv2DTranspose"
+    act  = ReLU()(conv)
+    up   = UpSampling2D(size=scale_fact if scale_fact != 4 else 2)(act)  # TODO: try "Conv2DTranspose"
     # mul = Multiply([np.zeros((img_width,img_height,img_depth)).fill(0.1), up])(up)
 
     # When it's a 4X factor, we want the upscale split in two procedures
@@ -66,25 +68,40 @@ def setUpModel(x_train, y_train):
                     padding='same')(up)
 
     model = Model(inputs=input, outputs=output)
+    sanity_checks(model)
 
-    # Sanity checks
+    # save_arch_and_weights(model)  # TODO: good place? necessary?
+
+    train(model, x_train, y_train)
+
+
+def load_saved_model(name, x_train, y_train):
+    print("Loading model from memory.")
+    saved_path = save_dir + '/' + name
+    model = load_model(saved_path)
+    sanity_checks(model)
+
+    train(model, x_train, y_train)
+
+
+def sanity_checks(model):
     print(model.summary())
     plot_model(model, to_file='CNN_graph.png')
 
-    # Save the model architecture (JSON)
-    model_path = save_dir + '/' + model_json
-    with open(model_path, 'w') as f:
-        f.write(model.to_json())
+
+#def save_arch_and_weights(model):
+    # # Save the model architecture (JSON)
+    # model_path = save_dir + '/' + model_json
+    # with open(model_path, 'w') as f:
+    #     f.write(model.to_json())
 
     # from keras.models import model_from_json
     # # Model reconstruction from JSON file
     # with open('model_architecture.json', 'r') as f:
     #     model = model_from_json(f.read())
 
-    # Load weights into the new model
-    save_path = save_dir + '/' + weights
-    if os.path.isfile(save_path):
-        print("Loading weights from previously saved model.")
-        model.load_weights(save_path)
-
-    train(model, x_train, y_train)
+    # # Load weights into the new model
+    # save_path = save_dir + '/' + weights
+    # if os.path.isfile(save_path):
+    #     print("Loading weights from previously saved model.")
+    #     model.load_weights(save_path)

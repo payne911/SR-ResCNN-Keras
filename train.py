@@ -5,14 +5,17 @@ from tests import test
 from constants import verbosity
 from constants import epochs
 from constants import batch_size
+from constants import model_saved
 
 
 # TODO: eventually look into https://blog.keras.io/building-powerful-image-classification-models-using-very-little-data.html
 def train(model, x_train, y_train):
     print("Training is starting.")
 
-    model.compile(optimizer=tf.train.AdamOptimizer(),
-                  loss='mean_squared_error')  # TODO: MS-SSIM loss (https://stackoverflow.com/a/51667654/9768291)
+    if model_saved == False:
+        print("Compiling the model since it wasn't loaded from memory.")
+        model.compile(optimizer=tf.train.AdamOptimizer(),
+                      loss='mean_squared_error')  # TODO: MS-SSIM loss (https://stackoverflow.com/a/51667654/9768291)
     # TODO: add custom metrics (https://keras.io/metrics/)
 
     # # To verify if GPU is recognized

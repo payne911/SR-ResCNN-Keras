@@ -12,6 +12,7 @@ from constants import batch_size
 from constants import verbosity
 from constants import save_dir
 from constants import weights
+from constants import model_name
 
 
 def test(model):
@@ -129,6 +130,7 @@ def predict(model, x_test, y_test):
     plt.figure(figsize=(12, 12))
     plt.suptitle("Results")
 
+    # TODO: Turn into a `Class(4, 4, img, "title")`
     # input image
     plt.subplot(4, 4, 1)
     plt.title("Input: 128x128")
@@ -206,9 +208,13 @@ def predict(model, x_test, y_test):
 
     plt.show()
 
-    # Prompt to save the weights
-    save_path = save_dir + '/' + weights
-    print(save_path)
+    prompt_model_save(model, model_name)
+
+
+def prompt_model_save(model, name):
+    save_path = save_dir + '/' + name
     save_bool = input("Save weights of this model (y/n) ?")
     if save_bool == "y":
-        model.save_weights('save/model_weights.h5')
+        model.save(save_path)
+        del model  # deletes the existing model
+        # model.save_weights('save/model_weights.h5')

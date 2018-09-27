@@ -4,22 +4,25 @@
 y_data_path = 'pictures/HR/512/'
 hr_img_path = 'pictures/HR/'
 crops_p_img = 5
-augment_im  = True
-prepare_im  = False
+augment_img = True
+prepare_img = False
 
 
 ############################
 ##       SAVE/LOAD        ##
 ############################
-save_dir   = 'save'
-model_json = 'model_architecture.json'
-weights    = 'model_weights.h5'
+save_model  = True  # Do you want to save the model once it has run?
+model_saved = False  # Should we load a saved model from memory ?
+save_dir    = 'save'
+model_name  = 'my_model.h5'
+# Deprecated:
+model_json  = 'model_architecture.json'
+weights     = 'model_weights.h5'
 
 
 ############################
 ##         MODEL          ##
 ############################
-save_model = True
 img_width  = 512
 img_height = 512
 img_depth  = 3

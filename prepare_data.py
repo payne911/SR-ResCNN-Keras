@@ -7,7 +7,7 @@ from skimage import io
 from constants import y_data_path
 from constants import img_width
 from constants import img_height
-from constants import augment_im
+from constants import augment_img
 from constants import crops_p_img
 
 from utils import setUpData
@@ -47,7 +47,7 @@ def random_crop(images):
                 y.append(float_im(initial_image))  # From [0,255] to [0.,1.]
 
                 # Augmenting the image  TODO: look into integrating "imgaug" library
-                if(augment_im):
+                if augment_img:
                     # Vertical axis flip
                     i += 1
                     tmp_img = np.fliplr(initial_image)
