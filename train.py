@@ -27,6 +27,9 @@ def train(model, x_train, y_train):
     # tf_device = tf.Session(config=tf.ConfigProto(log_device_placement=True))
     # tf_device.list_devices()
 
+    # import keras.backend as K
+    # K.set_value(optimizer.lr, 0.5 * K.get_value(optimizer.lr))
+
     model.fit(x_train,
               y_train,
               epochs=epochs,  # TODO is it multi-fold testing?

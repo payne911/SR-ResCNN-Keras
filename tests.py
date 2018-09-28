@@ -7,7 +7,6 @@ from skimage import io
 import utils
 from constants import img_width
 from constants import img_height
-from constants import scale_fact
 from constants import batch_size
 from constants import verbosity
 from constants import get_model_save_path
@@ -26,31 +25,14 @@ def extract_tests():
     x = []
     y = []
 
-    # TODO: Integrate all the new test images
-    # Extracting the benchmark images (HR)
-    y_test1 = skimage.io.imread("pictures/final_tests/0764.png")
-    y_test1 = crop_center(y_test1, img_width, img_height)
-    y.append(y_test1)
-    y_test2 = skimage.io.imread("pictures/final_tests/0774.png")
-    y_test2 = crop_center(y_test2, img_width, img_height)
-    y.append(y_test2)
+    tests_path = "pictures/final_tests/HR/"
 
-    # Extracting unknown disturbance tests
-    x_test1 = skimage.io.imread("pictures/final_tests/0764x4.png")
-    x_test1 = crop_center(x_test1, img_width // scale_fact, img_height // scale_fact)
-    x.append(x_test1)
-    x_test2 = skimage.io.imread("pictures/final_tests/0774x4.png")
-    x_test2 = crop_center(x_test2, img_width // scale_fact, img_height // scale_fact)
-    x.append(x_test2)
-
-    # Bicubic (?) downscale tests  TODO: verify the 'bicubic' claim
-    x_test3 = utils.single_downscale(y_test1)
-    x.append(x_test3)
-    x_test4 = utils.single_downscale(y_test2)
-    x.append(x_test4)
-    # Because we're using the same ultimate goal
-    y.append(y_test1)
-    y.append(y_test2)
+    for i in range(10):
+        # Extracting the benchmark images (HR)
+        y_test = crop_center(skimage.io.imread(tests_path + str(i) + ".png"), img_width, img_height)
+        y.append(y_test)
+        # Extracting middle part for prediction test
+        x.append(utils.single_downscale(y_test))
 
     return np.array(x), np.array(y)
 
@@ -89,29 +71,11 @@ def predict(model, x_test, y_test):
     # # Trying to make predictions on a bunch of images (works in batches)
     # predictions = model.predict(images)
 
-    # "model.predict" works in batches, so extracting a single prediction (for memory reasons):
-    x_test1 = x_test[0]
-    x_test2 = x_test[1]
-    x_test3 = x_test[2]
-    x_test4 = x_test[3]
-    # We don't need the 2 other "y_test" since they are duplicates
-    y_test1 = y_test[0]
-    y_test2 = y_test[1]
-
     # Extracting predictions
     predictions = []
-    input_img = (np.expand_dims(x_test1, 0))    # Add the image to a batch where it's the only member
-    prediction1 = model.predict(input_img)[0]   # returns a list of lists, one for each image in the batch of data
-    predictions.append(prediction1)
-    input_img = (np.expand_dims(x_test2, 0))
-    prediction2 = model.predict(input_img)[0]
-    predictions.append(prediction2)
-    input_img = (np.expand_dims(x_test3, 0))
-    prediction3 = model.predict(input_img)[0]
-    predictions.append(prediction3)
-    input_img = (np.expand_dims(x_test4, 0))
-    prediction4 = model.predict(input_img)[0]
-    predictions.append(prediction4)
+    for i in range(10):
+        input_img = (np.expand_dims(x_test[i], 0))       # Add the image to a batch where it's the only member
+        predictions.append(model.predict(input_img)[0])  # returns a list of lists, one for each image in the batch
 
     # # Taking the BICUBIC enlargment     TODO: figure out without taking the file from path again
     # bic1 = Image.open(data_path + '11.jpg').thumbnail((img_width, img_height), Image.BICUBIC)
@@ -129,8 +93,8 @@ def predict(model, x_test, y_test):
     # plt.savefig('pictures/final_tests/predictions/results.png', frameon=True) TODO: not working (white image)
 
     # Showing output vs expected image
-    show_pred_output(x_test3, prediction3, y_test1)
-    show_pred_output(x_test4, prediction4, y_test2)
+    for i in range(10):
+        show_pred_output(x_test[i], predictions[i], y_test[i])
 
     prompt_model_save(model)
 
@@ -157,5 +121,6 @@ def prompt_model_save(model):
     save_bool = input("Save progress from this model (y/n) ?\n")
     if save_bool == "y":
         model.save(get_model_save_path())
+        print("Model saved! :)")
         # model.save_weights('save/model_weights.h5')
     del model  # deletes the existing model  # TODO: use it even if not saving?

@@ -19,7 +19,10 @@ from constants import model_saved
 
 def loadData():
     print("Loading data.")
-    images = [float_im(skimage.io.imread(path)) for path in glob.glob(y_data_path + "*.png")]  # TODO: customize with command line
+    tmp_path = 'dataset/DIV2K/DIV2K/to_merge/0/'  # temporarily replacing 'y_data_path'
+    images = [float_im(skimage.io.imread(path)) for path in glob.glob(tmp_path + "*.png")]  # TODO: customize with command line
+
+    print("Converting to Numpy Array.")
     setUpData(np.array(images))
 
 
