@@ -1,0 +1,19 @@
+Train on 252 samples, validate on 28 samples
+
+Epoch 1/6
+ - 366s - loss: 0.0032 - val_loss: 0.0017
+Epoch 2/6
+ - 356s - loss: 0.0030 - val_loss: 0.0017
+Epoch 3/6
+ - 356s - loss: 0.0029 - val_loss: 0.0017
+Epoch 4/6
+ - 356s - loss: 0.0028 - val_loss: 0.0016
+Epoch 5/6
+ - 356s - loss: 0.0028 - val_loss: 0.0016
+
+Epoch 00005: ReduceLROnPlateau reducing learning rate to 0.00020000000949949026.
+
+Epoch 6/6
+ - 356s - loss: 0.0028 - val_loss: 0.0016
+
+[evaluate] Test loss: 0.003272718568041455

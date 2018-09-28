@@ -26,6 +26,7 @@ def extract_tests():
     x = []
     y = []
 
+    # TODO: Integrate all the new test images
     # Extracting the benchmark images (HR)
     y_test1 = skimage.io.imread("pictures/final_tests/0764.png")
     y_test1 = crop_center(y_test1, img_width, img_height)

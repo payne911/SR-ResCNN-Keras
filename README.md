@@ -6,17 +6,6 @@ The goal is to obtain a network that successfully increases the resolution of an
 # Warning
 This is still a Work In Progress. There are high probabilities of this project to be buggy. :)
 
-### TODO
-
-Notes to self.
-
-```
-* Better integrate TensorBoard (proper feature/image visualization)
-* Use DIV2K dataset for training
-* Use Keras ImagePreProcessing object
-* Make a proper README.md with this @ https://gist.github.com/PurpleBooth/109311bb0361f32d87a2
-```
-
 # Demonstration
 
 Here is a simple image of the current progress made (trained with 14 images that were data-augmented):
@@ -71,3 +60,13 @@ This project doesn't yet have a license applied. Reproduce at your own risk.
 ## Acknowledgments
 
 Thanks to everyone that has helped me through this project.
+
+### TODO
+
+Notes to self.
+
+```
+* Better integrate TensorBoard (proper feature/image visualization)
+* Use Keras ImagePreProcessing object
+* Make a proper README.md with this @ https://gist.github.com/PurpleBooth/109311bb0361f32d87a2
+```
