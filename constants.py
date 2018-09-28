@@ -15,9 +15,9 @@ prepare_img = False  # True => generate cropped images from HR (uses the paths s
 ##       SAVE/LOAD        ##
 ############################
 save_model  = True  # Do you want to save the model once it has run?
-model_saved = True  # Should we load a saved model from memory ?
+model_saved = False  # Should we load a saved model from memory ?
 save_dir    = 'save'
-model_name  = 'my_model.h5'
+model_name  = 'my_full_model.h5'
 # Deprecated:
 model_json  = 'model_architecture.json'
 weights     = 'model_weights.h5'

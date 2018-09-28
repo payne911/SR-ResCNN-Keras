@@ -25,8 +25,8 @@ def get_callbacks():
                                     period=5)  # Interval (number of epochs) between checkpoints.
 
     reduce_lr_cb = ReduceLROnPlateau(monitor='val_loss',
-                                     factor=0.2,  # new_lr = lr * factor
-                                     patience=4,  # number of epochs with no improvement before updating
+                                     factor=0.5,  # new_lr = lr * factor
+                                     patience=3,  # number of epochs with no improvement before updating
                                      verbose=1,
                                      mode='auto',
                                      min_delta=0.0001,
@@ -40,5 +40,5 @@ def get_callbacks():
                                   mode='auto',
                                   baseline=None)
 
-    # full list: [save_callback, stop_callback, reduce_lr_cb, tbCallBack]
-    return [reduce_lr_cb]
+    # full list:[save_callback, stop_callback, reduce_lr_cb, tbCallBack]
+    return []

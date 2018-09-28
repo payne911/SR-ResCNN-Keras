@@ -27,7 +27,7 @@ def extract_tests():
 
     tests_path = "pictures/final_tests/HR/"
 
-    for i in range(10):
+    for i in range(11):
         # Extracting the benchmark images (HR)
         y_test = crop_center(skimage.io.imread(tests_path + str(i) + ".png"), img_width, img_height)
         y.append(y_test)
@@ -73,7 +73,7 @@ def predict(model, x_test, y_test):
 
     # Extracting predictions
     predictions = []
-    for i in range(10):
+    for i in range(len(x_test)):
         input_img = (np.expand_dims(x_test[i], 0))       # Add the image to a batch where it's the only member
         predictions.append(model.predict(input_img)[0])  # returns a list of lists, one for each image in the batch
 
@@ -93,7 +93,7 @@ def predict(model, x_test, y_test):
     # plt.savefig('pictures/final_tests/predictions/results.png', frameon=True) TODO: not working (white image)
 
     # Showing output vs expected image
-    for i in range(10):
+    for i in range(len(predictions)):
         show_pred_output(x_test[i], predictions[i], y_test[i])
 
     prompt_model_save(model)
@@ -116,6 +116,7 @@ def show_pred_output(input, pred, truth):
     plt.imshow(truth, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     plt.show()
+
 
 def prompt_model_save(model):
     save_bool = input("Save progress from this model (y/n) ?\n")
