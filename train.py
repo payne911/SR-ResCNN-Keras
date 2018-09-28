@@ -1,4 +1,3 @@
-import tensorflow as tf
 from keras.optimizers import Adam
 from callbacks import get_callbacks
 

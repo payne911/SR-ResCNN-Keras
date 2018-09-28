@@ -19,10 +19,6 @@ Notes to self.
 
 # Demonstration
 
-Here is a simple image of the current progress made (trained with 11 images that were data-augmented):
-
-![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results.png)
-
 Here is a simple image of the current progress made (trained with 14 images that were data-augmented):
 
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results3.png)
@@ -32,6 +28,10 @@ One extra training iteration (of 6 epochs) gave the following result:
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results4.png)
 
 The images used were, of course, never used during training.
+
+Just for historical purposes, here is an image of the very first results taken from this experiment (trained with 11 images that were data-augmented):
+
+![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results.png)
 
 ## Getting Started
 
@@ -43,11 +43,12 @@ You will need a virtual environment that contains the following packages:
 
 ```
 tensorflow
+keras
 numpy
 matplotlib
+graphviz
 scikit-image (skimage)
-keras
-pillow
+pillow (PIL)
 hdf5 (h5py?)
 ```
 

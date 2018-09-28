@@ -13,6 +13,7 @@ from constants import verbosity
 from constants import get_model_save_path
 
 
+# TODO: Add an `args.parser` to be able to predict directly from command prompt
 def test(model):
     x_test, y_test = extract_tests()
 
