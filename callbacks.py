@@ -3,6 +3,7 @@ from keras.callbacks import Callback
 from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint
 from keras.callbacks import ReduceLROnPlateau
+from keras.callbacks import EarlyStopping
 
 import io
 from PIL import Image
@@ -39,9 +40,15 @@ def get_callbacks():
                                      cooldown=0,
                                      min_lr=0)
 
-    # return [save_callback, tbCallBack, tbi_callback]  TODO: re-add once the BoardImage issue is sorted out
+    stop_callback = EarlyStopping(monitor='val_loss',
+                                  min_delta=0.00001,  # change of less than min_delta will count as no improvement
+                                  patience=10,  # number of epochs with no improvement before stopping
+                                  verbose=1,
+                                  mode='auto',
+                                  baseline=None)
+
+    # full list: [save_callback, stop_callback, reduce_lr_cb, tbCallBack, tbi_callback]
     return [save_callback, reduce_lr_cb, tbCallBack]
-    # return [save_callback]
     # return []
 
 

@@ -78,7 +78,7 @@ def setUpModel(x_train, y_train):
 
 def load_saved_model(x_train, y_train):
     print("Loading model from memory.")
-    model = load_model(get_model_save_path())
+    model = load_model(get_model_save_path())  # TODO: add try-catch in case of wrong variable
     sanity_checks(model)
 
     train(model, x_train, y_train)

@@ -23,6 +23,10 @@ Here is a simple image of the current progress made (trained with 11 images that
 
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results.png)
 
+Here is a simple image of the current progress made (trained with 14 images that were data-augmented):
+
+![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results3.png)
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
