@@ -12,12 +12,16 @@ prepare_img = False
 ##       SAVE/LOAD        ##
 ############################
 save_model  = True  # Do you want to save the model once it has run?
-model_saved = False  # Should we load a saved model from memory ?
+model_saved = True  # Should we load a saved model from memory ?
 save_dir    = 'save'
 model_name  = 'my_model.h5'
 # Deprecated:
 model_json  = 'model_architecture.json'
 weights     = 'model_weights.h5'
+
+
+def get_model_save_path():
+    return save_dir + '/' + model_name
 
 
 ############################
@@ -33,6 +37,6 @@ res_blocks = 3  # a power of 2, minus 1
 ############################
 ##        TRAINING        ##
 ############################
-epochs     = 6
+epochs     = 30  # 6 worked well, now testing "ReduceLROnPlateau" Keras callback
 batch_size = 1  # 32 images -> 32 batches
 verbosity  = 2

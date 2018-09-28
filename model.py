@@ -4,16 +4,17 @@
 # from constants import weights
 
 from keras.layers import *
+
 from keras.models import Model
 from keras.utils import plot_model
 from keras.models import load_model
+from constants import get_model_save_path
 
 from constants import img_width
 from constants import img_height
 from constants import img_depth
 from constants import res_blocks
 from constants import scale_fact
-from constants import save_dir
 
 from train import train
 
@@ -75,10 +76,9 @@ def setUpModel(x_train, y_train):
     train(model, x_train, y_train)
 
 
-def load_saved_model(name, x_train, y_train):
+def load_saved_model(x_train, y_train):
     print("Loading model from memory.")
-    saved_path = save_dir + '/' + name
-    model = load_model(saved_path)
+    model = load_model(get_model_save_path())
     sanity_checks(model)
 
     train(model, x_train, y_train)

@@ -1,6 +1,8 @@
 import tensorflow as tf
 from keras.callbacks import Callback
 from keras.callbacks import TensorBoard
+from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ReduceLROnPlateau
 
 import io
 from PIL import Image
@@ -20,13 +22,27 @@ def get_callbacks():
 
     tbi_callback = TensorBoardImage('Image test')
 
-    # TODO: add "Reduced Learning Rate" (https://keras.io/callbacks/#ReduceLROnPlateau)
-    # keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, verbose=0, mode='auto',
-    #                                   min_delta=0.0001, cooldown=0, min_lr=0)
+    save_callback = ModelCheckpoint("save/weights.{epoch:02d}-{val_loss:.2f}.hdf5",
+                                    monitor='val_loss',
+                                    verbose=1,
+                                    save_best_only=True,
+                                    save_weights_only=False,
+                                    mode='auto',
+                                    period=5)  # Interval (number of epochs) between checkpoints.
 
-    #return [tbCallBack, tbi_callback]  TODO: re-add once the BoardImage issue is sorted out
-    #return [tbCallBack]  TODO: currently too slow...
-    return []
+    reduce_lr_cb = ReduceLROnPlateau(monitor='val_loss',
+                                     factor=0.2,  # new_lr = lr * factor
+                                     patience=4,  # number of epochs with no improvement before updating
+                                     verbose=1,
+                                     mode='auto',
+                                     min_delta=0.0001,
+                                     cooldown=0,
+                                     min_lr=0)
+
+    # return [save_callback, tbCallBack, tbi_callback]  TODO: re-add once the BoardImage issue is sorted out
+    return [save_callback, reduce_lr_cb, tbCallBack]
+    # return [save_callback]
+    # return []
 
 
 def make_image(tensor):

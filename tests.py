@@ -10,9 +10,7 @@ from constants import img_height
 from constants import scale_fact
 from constants import batch_size
 from constants import verbosity
-from constants import save_dir
-from constants import weights
-from constants import model_name
+from constants import get_model_save_path
 
 
 def test(model):
@@ -208,13 +206,12 @@ def predict(model, x_test, y_test):
 
     plt.show()
 
-    prompt_model_save(model, model_name)
+    prompt_model_save(model)
 
 
-def prompt_model_save(model, name):
-    save_path = save_dir + '/' + name
-    save_bool = input("Save weights of this model (y/n) ?")
+def prompt_model_save(model):
+    save_bool = input("Save progress from this model (y/n) ?\n")
     if save_bool == "y":
-        model.save(save_path)
-        del model  # deletes the existing model
+        model.save(get_model_save_path())
         # model.save_weights('save/model_weights.h5')
+    del model  # deletes the existing model  # TODO: use it even if not saving?

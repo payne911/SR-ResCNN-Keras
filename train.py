@@ -1,4 +1,5 @@
 import tensorflow as tf
+from keras.optimizers import Adam
 from callbacks import get_callbacks
 
 from tests import test
@@ -14,7 +15,13 @@ def train(model, x_train, y_train):
 
     if model_saved == False:
         print("Compiling the model since it wasn't loaded from memory.")
-        model.compile(optimizer=tf.train.AdamOptimizer(),
+        optimizer = Adam(lr=0.001,
+                         beta_1=0.9,
+                         beta_2=0.999,
+                         epsilon=None,
+                         decay=0.0,
+                         amsgrad=False)
+        model.compile(optimizer=optimizer,
                       loss='mean_squared_error')  # TODO: MS-SSIM loss (https://stackoverflow.com/a/51667654/9768291)
     # TODO: add custom metrics (https://keras.io/metrics/)
 
@@ -30,6 +37,5 @@ def train(model, x_train, y_train):
               validation_split=0.1,
               batch_size=batch_size,
               callbacks=get_callbacks())
-    # TODO: add save/load (https://keras.io/callbacks/#modelcheckpoint)
 
     test(model)

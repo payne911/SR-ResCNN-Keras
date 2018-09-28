@@ -14,7 +14,6 @@ Notes to self.
 * Better integrate TensorBoard (proper feature/image visualization)
 * Use DIV2K dataset for training
 * Use Keras ImagePreProcessing object
-* Integrate Save/Load of Model Checkpoints
 * Make a proper README.md with this @ https://gist.github.com/PurpleBooth/109311bb0361f32d87a2
 ```
 
