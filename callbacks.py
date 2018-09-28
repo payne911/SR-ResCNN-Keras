@@ -48,8 +48,7 @@ def get_callbacks():
                                   baseline=None)
 
     # full list: [save_callback, stop_callback, reduce_lr_cb, tbCallBack, tbi_callback]
-    return [save_callback, reduce_lr_cb, tbCallBack]
-    # return []
+    return [reduce_lr_cb]
 
 
 def make_image(tensor):

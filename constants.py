@@ -37,6 +37,6 @@ res_blocks = 3  # a power of 2, minus 1
 ############################
 ##        TRAINING        ##
 ############################
-epochs     = 30  # 6 worked well, now testing "ReduceLROnPlateau" Keras callback
+epochs     = 6  # 6 works well
 batch_size = 1  # 32 images -> 32 batches
 verbosity  = 2

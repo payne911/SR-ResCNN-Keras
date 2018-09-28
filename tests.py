@@ -111,6 +111,10 @@ def predict(model, x_test, y_test):
     prediction4 = model.predict(input_img)[0]
     predictions.append(prediction4)
 
+    # # Taking the BICUBIC enlargment     TODO: figure out without taking the file from path again
+    # bic1 = Image.open(data_path + '11.jpg').thumbnail((img_width, img_height), Image.BICUBIC)
+    # bic2 = Image.open(data_path + '12.jpg').thumbnail((img_width, img_height), Image.BICUBIC)
+
     # # TODO: Saving predictions
     # i = 0
     # save_path = "pictures/final_tests/predictions/"
@@ -119,95 +123,33 @@ def predict(model, x_test, y_test):
     #     utils.save_np_img(pred, save_path, str(i) + ".png")
     #     i += 1
 
-
-    # # Taking the BICUBIC enlargment     TODO: figure out without taking the file from path again
-    # bic1 = Image.open(data_path + '11.jpg').thumbnail((img_width, img_height), Image.BICUBIC)
-    # bic2 = Image.open(data_path + '12.jpg').thumbnail((img_width, img_height), Image.BICUBIC)
-
-    # TODO: Figure out how to show images to scale
-    plt.figure(figsize=(12, 12))
-    plt.suptitle("Results")
-
-    # TODO: Turn into a `Class(4, 4, img, "title")`
-    # input image
-    plt.subplot(4, 4, 1)
-    plt.title("Input: 128x128")
-    plt.imshow(x_test1, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(4, 4, 2)
-    plt.title("Input: 128x128")
-    plt.imshow(x_test2, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(4, 4, 3)
-    plt.title("Bicubic: 128x128")
-    plt.imshow(x_test3, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(4, 4, 4)
-    plt.title("Bicubic: 128x128")
-    plt.imshow(x_test4, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-
-    # bicubic enlargment  TODO: remove duplicate (input img) placeholder
-    plt.subplot(4, 4, 5)
-    plt.title("WIP (ignore)")
-    plt.imshow(x_test1, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(4, 4, 6)
-    plt.title("WIP (ignore)")
-    plt.imshow(x_test2, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(4, 4, 7)
-    plt.title("WIP (ignore)")
-    plt.imshow(x_test3, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(4, 4, 8)
-    plt.title("WIP (ignore)")
-    plt.imshow(x_test4, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-
-    # predicted image (x4 through network)
-    plt.subplot(4, 4, 9)
-    plt.title("Output: 512x512")
-    plt.imshow(prediction1, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(4, 4, 10)
-    plt.title("Output: 512x512")
-    plt.imshow(prediction2, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(4, 4, 11)
-    plt.title("Output: 512x512")
-    plt.imshow(prediction3, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(4, 4, 12)
-    plt.title("Output: 512x512")
-    plt.imshow(prediction4, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-
-    # initial image (HR)
-    plt.subplot(4, 4, 13)
-    plt.title("HR version: 512x512")
-    plt.imshow(y_test1, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(4, 4, 14)
-    plt.title("HR version: 512x512")
-    plt.imshow(y_test2, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(4, 4, 15)
-    plt.title("HR version: 512x512")
-    plt.imshow(y_test1, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(4, 4, 16)
-    plt.title("HR version: 512x512")
-    plt.imshow(y_test2, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-
-    plt.show()
-
     # https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.savefig
     # plt.savefig('pictures/final_tests/predictions/results.png', frameon=True) TODO: not working (white image)
 
     # Showing output vs expected image
-    plt.figure(figsize=(20, 20))
-    plt.suptitle("Results")
-    # input image
-    plt.subplot(1, 3, 1)
-    plt.title("Input: 128x128")
-    plt.imshow(x_test3, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(1, 3, 2)
-    plt.title("Output: 512x512")
-    plt.imshow(prediction3, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-    plt.subplot(1, 3, 3)
-    plt.title("HR version: 512x512")
-    plt.imshow(y_test1, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-
-    plt.show()
+    show_pred_output(x_test3, prediction3, y_test1)
+    show_pred_output(x_test4, prediction4, y_test2)
 
     prompt_model_save(model)
 
+
+def show_pred_output(input, pred, truth):
+    plt.figure(figsize=(20, 20))
+    plt.suptitle("Results")
+
+    plt.subplot(1, 3, 1)
+    plt.title("Input: 128x128")
+    plt.imshow(input, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
+
+    plt.subplot(1, 3, 2)
+    plt.title("Output: 512x512")
+    plt.imshow(pred, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
+
+    plt.subplot(1, 3, 3)
+    plt.title("HR version: 512x512")
+    plt.imshow(truth, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
+
+    plt.show()
 
 def prompt_model_save(model):
     save_bool = input("Save progress from this model (y/n) ?\n")
