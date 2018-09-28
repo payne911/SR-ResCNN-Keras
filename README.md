@@ -27,6 +27,12 @@ Here is a simple image of the current progress made (trained with 14 images that
 
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results3.png)
 
+One extra training iteration (of 6 epochs) gave the following result:
+
+![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results4.png)
+
+The images used were, of course, never used during training.
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
