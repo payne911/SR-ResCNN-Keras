@@ -1,7 +1,7 @@
 ############################
 ##        PREPARE         ##
 ############################
-y_data_path = 'dataset/DIV2K/DIV2K/generated_crops/'
+y_data_path = 'dataset/DIV2K/DIV2K/to_merge/1/'
 hr_img_path = 'dataset/DIV2K/DIV2K/DIV2K_train_HR/'
 crops_p_img = 7      # Number of samples/crops taken per HR image (to get the target output size)
 augment_img = True   # Augment data with flips (each image will generate 3 more images)
@@ -14,8 +14,7 @@ prepare_img = False  # True => generate cropped images from HR (uses the paths s
 ############################
 ##       SAVE/LOAD        ##
 ############################
-save_model  = True  # Do you want to save the model once it has run?
-model_saved = False  # Should we load a saved model from memory ?
+load_model  = True  # Should we load a saved model from memory ?
 save_dir    = 'save'
 model_name  = 'my_full_model.h5'
 # Deprecated:
@@ -41,5 +40,5 @@ res_blocks = 3    # a power of 2, minus 1
 ##        TRAINING        ##
 ############################
 epochs     = 6  # 6 works well
-batch_size = 1  # adjust based on your memory (maximize memory usage)
+batch_size = 1  # adjust based on your GPU memory (maximize memory usage)
 verbosity  = 2  # message feedback from Keras (0, 1 or 2): higher means more verbose

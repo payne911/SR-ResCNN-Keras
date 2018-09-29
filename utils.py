@@ -14,13 +14,12 @@ from constants import scale_fact
 
 from model import setUpModel
 from model import load_saved_model
-from constants import model_saved
+from constants import load_model
 
 
 def loadData():
     print("Loading data.")
-    tmp_path = 'dataset/DIV2K/DIV2K/to_merge/0/'  # temporarily replacing 'y_data_path'
-    images = [float_im(skimage.io.imread(path)) for path in glob.glob(tmp_path + "*.png")]  # TODO: customize with command line
+    images = [float_im(skimage.io.imread(path)) for path in glob.glob(y_data_path + "*.png")]  # TODO: customize with command line
 
     print("Converting to Numpy Array.")
     setUpData(np.array(images))
@@ -102,7 +101,7 @@ def setUpData(y_train):
     #     plt.imshow(x_train[i], cmap=plt.cm.binary)
     # plt.show()
 
-    if model_saved:
+    if load_model:
         load_saved_model(x_train, y_train)
     else:
         setUpModel(x_train, y_train)

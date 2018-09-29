@@ -3,3 +3,4 @@
 # Except this file
 !.gitignore
 !my_model.h5
+!my_full_model.h5
