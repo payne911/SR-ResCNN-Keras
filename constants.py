@@ -47,4 +47,4 @@ verbosity  = 2  # message feedback from Keras (0, 1 or 2): higher means more ver
 ############################
 ##       EVALUATION       ##
 ############################
-tests_path = 'pictures/final_tests/HR/'  # path to the folder containing the HR images to test with
+tests_path = 'input/'  # path to the folder containing the HR images to test with

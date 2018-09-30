@@ -29,6 +29,17 @@ def float_im(img):
     return np.divide(img, 255.)
 
 
+# Adapted from: https://stackoverflow.com/a/39382475/9768291
+def crop_center(img, crop_x, crop_y):
+    y, x, _ = img.shape
+    start_x = x//2-(crop_x // 2)
+    start_y = y//2-(crop_y // 2)
+
+    cropped_img = img[start_y:start_y + crop_y, start_x:start_x + crop_x]
+
+    return float_im(cropped_img)
+
+
 # TODO: provide some way of saving FLOAT images
 def save_np_img(np_img, path, name):
     """

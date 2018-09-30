@@ -2,7 +2,7 @@
 from keras.optimizers import Adadelta
 from callbacks import get_callbacks
 
-from tests import test
+from predict import run_tests
 from constants import verbosity
 from constants import epochs
 from constants import batch_size
@@ -40,4 +40,4 @@ def train(model, x_train, y_train):
               batch_size=batch_size,
               callbacks=get_callbacks())
 
-    test(model)
+    run_tests(model)

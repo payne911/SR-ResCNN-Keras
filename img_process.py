@@ -14,7 +14,7 @@ from constants import scale_fact
 from constants import res_blocks
 from utils import float_im
 
-from tests import test
+from predict import run_tests
 
 
 # adapted from: https://stackoverflow.com/a/52463034/9768291
@@ -157,7 +157,7 @@ def train(model):
                         epochs=6,
                         callbacks=get_callbacks())
 
-    test(model)
+    run_tests(model)
 
 
 if __name__ == '__main__':

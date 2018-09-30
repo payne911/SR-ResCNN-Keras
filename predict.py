@@ -15,11 +15,11 @@ from constants import tests_path
 
 # TODO: Add an `args.parser` to be able to predict directly from command prompt
 # TODO: Add a function to take images from folder and test with them directly (no ground_truth)
-def test(model):
+def run_tests(model):
     x_test, y_test = extract_tests()
 
     evaluate(model, x_test, y_test)
-    predict(model, x_test, y_test)
+    predicts(model, x_test, y_test)
 
 
 def extract_tests():
@@ -29,7 +29,7 @@ def extract_tests():
 
     for i in range(11):
         # Extracting the benchmark images (HR)
-        y_test = crop_center(skimage.io.imread(tests_path + str(i) + ".png"), img_width, img_height)
+        y_test = utils.crop_center(skimage.io.imread(tests_path + str(i) + ".png"), img_width, img_height)
         y.append(y_test)
         # Extracting middle part for prediction test
         x.append(utils.single_downscale(y_test))
@@ -54,18 +54,7 @@ def evaluate(model, x_test, y_test):
     # print('Test accuracy: ', score[1])
 
 
-# Adapted from: https://stackoverflow.com/a/39382475/9768291
-def crop_center(img, crop_x, crop_y):
-    y, x, _ = img.shape
-    start_x = x//2-(crop_x // 2)
-    start_y = y//2-(crop_y // 2)
-
-    cropped_img = img[start_y:start_y + crop_y, start_x:start_x + crop_x]
-
-    return utils.float_im(cropped_img)
-
-
-def predict(model, x_test, y_test):
+def predicts(model, x_test, y_test):
     print("Starting predictions.")
 
     # # Trying to make predictions on a bunch of images (works in batches)
@@ -125,3 +114,10 @@ def prompt_model_save(model):
         print("Model saved! :)")
         # model.save_weights('save/model_weights.h5')
     del model  # deletes the existing model  # TODO: use it even if not saving?
+
+
+# def predict(img_path):
+#     return img_path
+#
+# if __name__ == '__main__':
+#     predict(args)
