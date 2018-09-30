@@ -132,13 +132,22 @@ verbosity  = 2  # message feedback from Keras (0, 1 or 2): higher means more ver
 
 See also the list of [contributors](https://github.com/payne911/SR-ResCNN-Keras-/graphs/contributors) who participated in this project.
 
+## Graph
+
+Here is the actual graph of the network used.
+
+![comparing](https://github.com/payne911/SR-ResCNN-Keras-/blob/master/CNN_graph.png)
+
 ## License
 
 This project doesn't yet have a license applied. Reproduce at your own risk.
 
 ## Acknowledgments
 
-Thanks to everyone that has helped me through this project.
+My thanks go to:
+
+* [sds](https://stackoverflow.com/users/7350191/sds): a kind user that has helped understand a few things when I was just starting with this project.
+* [this repo](https://github.com/thstkdgus35/EDSR-PyTorch) which provided me with some insights on the actual implementation discussed in [this paper](https://arxiv.org/pdf/1707.02921.pdf).
 
 ### TODO
 
