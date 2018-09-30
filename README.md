@@ -3,6 +3,10 @@ A Keras implementation of a Super-Resolution Residual Convolutional Neural Netwo
 
 The goal is to obtain a network that successfully increases the resolution of an image by filling the gaps in a manner that outperforms the generic "bicubic" method.
 
+The model's architecture used in this project can be visualized [here](https://github.com/payne911/SR-ResCNN-Keras-/blob/master/CNN_graph.png).
+
+Hardware and time limitations prevent me from perfecting this project too much, but it has already reached a decent state. :)
+
 # Warning
 This is still a Work In Progress.
 
@@ -10,13 +14,15 @@ This is still a Work In Progress.
 
 Here is a simple image of the current progress made (trained with 14 images that were data-augmented):
 
-![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results3.png)
-
-One extra training iteration (of 6 epochs) gave the following result:
-
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results4.png)
 
 The images used were, of course, never revealed to the network during training.
+
+I am currently collecting samples coming from the more recent model that was trained using the DIV2K dataset.
+
+### [DIV2K dataset](http://www.vision.ee.ethz.ch/~timofter/publications/Agustsson-CVPRW-2017.pdf)
+
+You can download it [here](https://cv.snu.ac.kr/research/EDSR/DIV2K.tar) (7.1GB).
 
 ## Getting Started
 
@@ -131,12 +137,6 @@ verbosity  = 2  # message feedback from Keras (0, 1 or 2): higher means more ver
 * **Jérémi Grenier-Berthiaume**
 
 See also the list of [contributors](https://github.com/payne911/SR-ResCNN-Keras-/graphs/contributors) who participated in this project.
-
-## Graph
-
-Here is the actual graph of the network used.
-
-![comparing](https://github.com/payne911/SR-ResCNN-Keras-/blob/master/CNN_graph.png)
 
 ## License
 
