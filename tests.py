@@ -112,7 +112,7 @@ def show_pred_output(input, pred, truth):
     plt.imshow(pred, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     plt.subplot(1, 3, 3)
-    plt.title("HR version: 512x512")
+    plt.title("Target (HR): 512x512")
     plt.imshow(truth, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     plt.show()

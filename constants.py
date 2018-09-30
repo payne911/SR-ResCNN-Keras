@@ -1,8 +1,8 @@
 ############################
 ##        PREPARE         ##
 ############################
-y_data_path = 'dataset/DIV2K/DIV2K/to_merge/1/'
-hr_img_path = 'dataset/DIV2K/DIV2K/DIV2K_train_HR/'
+y_data_path = 'dataset/DIV2K/DIV2K/to_merge/1/'  # Path from where the "y_train" data will be loaded (512x512x3 images)
+hr_img_path = 'dataset/DIV2K/DIV2K/DIV2K_train_HR/'  # Path where the "y_train" data will be extracted from (if `prepare_img` is set to True)
 crops_p_img = 7      # Number of samples/crops taken per HR image (to get the target output size)
 augment_img = True   # Augment data with flips (each image will generate 3 more images)
 prepare_img = False  # True => generate cropped images from HR (uses the paths set just above)
@@ -15,9 +15,9 @@ prepare_img = False  # True => generate cropped images from HR (uses the paths s
 ##       SAVE/LOAD        ##
 ############################
 load_model  = True  # Should we load a saved model from memory ?
-save_dir    = 'save'
-model_name  = 'my_full_model.h5'
-# Deprecated:
+save_dir    = 'save'  # folder name where the model will be saved
+model_name  = 'my_full_model.h5'  # Name of the model that is to be loaded/saved
+# TODO:
 model_json  = 'model_architecture.json'
 weights     = 'model_weights.h5'
 
