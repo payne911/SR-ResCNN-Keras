@@ -146,6 +146,7 @@ Notes to self.
 
 ```
 * Better integrate TensorBoard (proper feature/image visualization)
+* Use x_test to generate bicubic enlargments
 * Use Keras ImagePreProcessing object
 * Provide the "Weights" and "Architecture JSON" for both models
 * Add "arg.parser" to facilitate command-line control
