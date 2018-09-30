@@ -42,3 +42,9 @@ res_blocks = 3    # a power of 2, minus 1
 epochs     = 6  # 6 works well
 batch_size = 1  # adjust based on your GPU memory (maximize memory usage)
 verbosity  = 2  # message feedback from Keras (0, 1 or 2): higher means more verbose
+
+
+############################
+##       EVALUATION       ##
+############################
+tests_path = 'pictures/final_tests/HR/'  # path to the folder containing the HR images to test with

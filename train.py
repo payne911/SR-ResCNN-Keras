@@ -28,10 +28,6 @@ def train(model, x_train, y_train):
         model.compile(optimizer=optimizer,
                       loss='mean_squared_error')  # TODO: MS-SSIM loss (https://stackoverflow.com/a/51667654/9768291)
 
-    # # To verify if GPU is recognized
-    # tf_device = tf.Session(config=tf.ConfigProto(log_device_placement=True))
-    # tf_device.list_devices()
-
     # import keras.backend as K
     # K.set_value(optimizer.lr, 0.5 * K.get_value(optimizer.lr))
 

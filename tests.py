@@ -10,9 +10,11 @@ from constants import img_height
 from constants import batch_size
 from constants import verbosity
 from constants import get_model_save_path
+from constants import tests_path
 
 
 # TODO: Add an `args.parser` to be able to predict directly from command prompt
+# TODO: Add a function to take images from folder and test with them directly (no ground_truth)
 def test(model):
     x_test, y_test = extract_tests()
 
@@ -24,8 +26,6 @@ def extract_tests():
     print("Starting tests. Extracting images to feed.")
     x = []
     y = []
-
-    tests_path = "pictures/final_tests/HR/"
 
     for i in range(11):
         # Extracting the benchmark images (HR)

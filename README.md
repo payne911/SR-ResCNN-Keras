@@ -116,6 +116,12 @@ res_blocks = 3    # a power of 2, minus 1
 epochs     = 6  # 6 works well
 batch_size = 1  # adjust based on your GPU memory (maximize memory usage)
 verbosity  = 2  # message feedback from Keras (0, 1 or 2): higher means more verbose
+
+
+############################
+##       EVALUATION       ##
+############################
+tests_path = 'pictures/final_tests/HR/'  # path to the folder containing the HR images to test with
 ```
 
 ## Built With
@@ -146,6 +152,7 @@ Notes to self.
 * Use Keras ImagePreProcessing object
 * Provide the "Weights" and "Architecture JSON" for both models
 * Add "arg.parser" to facilitate command-line control
+* Provide with a command-line control to use the network for any image
 * Create Android Application that uses the model as a Proof of Concept
 * Make a proper README.md with this @ https://gist.github.com/PurpleBooth/109311bb0361f32d87a2
 ```
