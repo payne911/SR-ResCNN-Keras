@@ -11,7 +11,6 @@ Hardware and time limitations prevent me from perfecting this project too much, 
 This is still a Work In Progress.
 
 # Demonstration
-
 Here is a simple image of the current progress made (trained with 14 images that were data-augmented):
 
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results4.png)
@@ -21,15 +20,12 @@ The images used were, of course, never revealed to the network during training.
 I am currently collecting samples coming from the more recent model that was trained using the DIV2K dataset.
 
 ### [DIV2K dataset](http://www.vision.ee.ethz.ch/~timofter/publications/Agustsson-CVPRW-2017.pdf)
-
 You can download it [here](https://cv.snu.ac.kr/research/EDSR/DIV2K.tar) (7.1GB).
 
 ## Getting Started
-
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
-
 You will need a virtual environment that contains the following packages:
 
 ```
@@ -44,7 +40,6 @@ hdf5 (h5py?)
 ```
 
 ### Pre-trained models
-
 I have two pre-trained models. An earlier one that used 14 images (that were data augmented) and the `Adam` optimizer.
 
 And another one that used the whole real data set I had set aside while developing the code. That one used the `Adadelta` optimizer.
@@ -56,7 +51,6 @@ I plan on providing the architecture as a JSON and the weights as individual fil
 I'll probably eventually provide an Android application as a Proof of Concept.
 
 ### Getting the project
-
 Use the following line to import the project on your computer.
 
 ```
@@ -66,7 +60,6 @@ git clone https://github.com/payne911/SR-ResCNN-Keras-.git
 You can then open it with your preferred IDE and start messing around. Minor tweaks will most probably be done through the ``constants.py`` file which is more or less the "Controler" of the flow.
 
 ### Flow of the code
-
 To run the code through a command line, activate your virtual environment and type:
 
 ```
@@ -76,7 +69,6 @@ python train.py
 Based on the variables set in the ``constants.py`` file, the flow of the program will be different.
 
 #### constants.py
-
 For now, I'll just be lazy and copy paste its content so that you can have a rough idea of the possibilities:
 
 ```python
@@ -127,30 +119,25 @@ verbosity  = 2  # message feedback from Keras (0, 1 or 2): higher means more ver
 ```
 
 ## Built With
-
 * [PyCharm](https://www.jetbrains.com/pycharm/) - The IDE used
 * [Keras](https://keras.io/) - The wrapper on TensorFlow framework
 * [Python 3.6](https://www.python.org/downloads/release/python-360/)
 
 ## Author
-
 * **Jérémi Grenier-Berthiaume**
 
 See also the list of [contributors](https://github.com/payne911/SR-ResCNN-Keras-/graphs/contributors) who participated in this project.
 
 ## License
-
 This project doesn't yet have a license applied. Reproduce at your own risk.
 
 ## Acknowledgments
-
 My thanks go to:
 
-* [sds](https://stackoverflow.com/users/7350191/sds): a kind user that has helped understand a few things when I was just starting with this project.
+* [sds](https://stackoverflow.com/users/7350191/sds): a kind StackOverflow user that has helped understand a few things when I was just starting with this project.
 * [this repo](https://github.com/thstkdgus35/EDSR-PyTorch) which provided me with some insights on the actual implementation discussed in [this paper](https://arxiv.org/pdf/1707.02921.pdf).
 
 ### TODO
-
 Notes to self.
 
 ```
