@@ -1,7 +1,7 @@
 ############################
 ##        PREPARE         ##
 ############################
-y_data_path = 'dataset/DIV2K/DIV2K/to_merge/1/'  # Path from where the "y_train" data will be loaded (512x512x3 images)
+y_data_path = 'dataset/DIV2K/DIV2K/to_merge/1/sub/'  # Path from where the "y_train" data will be loaded (512x512x3 images)
 hr_img_path = 'dataset/DIV2K/DIV2K/DIV2K_train_HR/'  # Path where the "y_train" data will be extracted from (if `prepare_img` is set to True)
 crops_p_img = 7      # Number of samples/crops taken per HR image (to get the target output size)
 augment_img = True   # Augment data with flips (each image will generate 3 more images)
