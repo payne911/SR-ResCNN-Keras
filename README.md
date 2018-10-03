@@ -1,14 +1,14 @@
 # SR-ResCNN
-A Keras implementation of a Super-Resolution Residual Convolutional Neural Network.
+A Keras implementation of a Super-Resolution Residual CNN.
 
 The goal is to obtain a network that successfully increases the resolution of an image by filling the gaps in a manner that outperforms the generic "bicubic" method.
 
 The model's architecture used in this project can be visualized [here](https://github.com/payne911/SR-ResCNN-Keras-/blob/master/CNN_graph.png).
 
-Hardware and time limitations prevent me from perfecting this project too much, but it has already reached a decent state. :)
-
 # Warning
 This is still a Work In Progress.
+
+Hardware and time limitations prevent me from perfecting this project too much, but it has already reached a decent state. :)
 
 # Demonstration
 Here is a simple image of the current progress made (trained with 14 images that were data-augmented):
@@ -26,7 +26,7 @@ You can download it [here](https://cv.snu.ac.kr/research/EDSR/DIV2K.tar) (7.1GB)
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
-You will need a virtual environment that contains the following packages:
+You will need a virtual environment that contains the following packages if you want to mess with the code:
 
 ```
 tensorflow
@@ -36,6 +36,17 @@ matplotlib
 graphviz
 scikit-image (skimage)
 pillow (PIL)
+hdf5 (h5py?)
+```
+
+For simple predictions through the command line, though, you will only need:
+
+```
+tensorflow
+keras
+numpy
+matplotlib
+scikit-image (skimage)
 hdf5 (h5py?)
 ```
 
@@ -59,8 +70,30 @@ git clone https://github.com/payne911/SR-ResCNN-Keras-.git
 
 You can then open it with your preferred IDE and start messing around. Minor tweaks will most probably be done through the ``constants.py`` file which is more or less the "Controler" of the flow.
 
+### Using the model to increase the resolution of an image
+
+As it is, I have not implemented the option to input a full-sized image. Only portions of 128x128 pixels will be shown to you as samples.
+
+Put the image inside the ``input`` folder, and run the following command (after activating your virtual environment):
+
+```
+python predict.py your_image.png
+```
+
+This should return you a certain amount of crops from the image. Other options are available:
+
+```
+python predict.py your_image.png -a=3
+```
+
+Will show you only 3 samples from your image, for example. For a full list of the commands available to you:
+
+```
+python predict.py -h
+```
+
 ### Flow of the code
-To run the code through a command line, activate your virtual environment and type:
+To run the code through a command line, activate your virtual environment and type (though as it is it isn't really recommended since you most probably do not have a dataset set up at proper place for the default variables to work out fine... you'll have to actually modify the ``constants.py`` file):
 
 ```
 python train.py
@@ -75,7 +108,7 @@ For now, I'll just be lazy and copy paste its content so that you can have a rou
 ############################
 ##        PREPARE         ##
 ############################
-y_data_path = 'dataset/DIV2K/DIV2K/to_merge/1/'  # Path from where the "y_train" data will be loaded (512x512x3 images)
+y_data_path = 'dataset/DIV2K/DIV2K/to_merge/2/'  # Path from where the "y_train" data will be loaded (512x512x3 images)
 hr_img_path = 'dataset/DIV2K/DIV2K/DIV2K_train_HR/'  # Path where the "y_train" data will be extracted from (if `prepare_img` is set to True)
 crops_p_img = 7      # Number of samples/crops taken per HR image (to get the target output size)
 augment_img = True   # Augment data with flips (each image will generate 3 more images)
@@ -121,7 +154,7 @@ verbosity  = 2  # message feedback from Keras (0, 1 or 2): higher means more ver
 ############################
 ##       EVALUATION       ##
 ############################
-tests_path = 'pictures/final_tests/HR/'  # path to the folder containing the HR images to test with
+tests_path = 'input/'  # path to the folder containing the HR images to test with
 ```
 
 ## Built With
@@ -151,8 +184,6 @@ Notes to self.
 * Use x_test to generate bicubic enlargments
 * Use Keras ImagePreProcessing object
 * Provide the "Weights" and "Architecture JSON" for both models
-* Add "arg.parser" to facilitate command-line control
-* Provide with a command-line control to use the network for any image
 * Create Android Application that uses the model as a Proof of Concept
 * Make a proper README.md with this @ https://gist.github.com/PurpleBooth/109311bb0361f32d87a2
 ```

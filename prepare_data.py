@@ -1,8 +1,7 @@
 import numpy as np
 import glob
 
-import skimage
-from skimage import io
+import skimage.io
 
 from constants import y_data_path
 from constants import img_width

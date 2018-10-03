@@ -2,7 +2,7 @@
 from keras.optimizers import Adadelta
 from callbacks import get_callbacks
 
-from predict import run_tests
+from test import run_tests
 from constants import verbosity
 from constants import epochs
 from constants import batch_size

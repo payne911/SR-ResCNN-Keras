@@ -14,7 +14,7 @@ from constants import scale_fact
 from constants import res_blocks
 from utils import float_im
 
-from predict import run_tests
+from test import run_tests
 
 
 # adapted from: https://stackoverflow.com/a/52463034/9768291
@@ -32,15 +32,11 @@ def random_crop(img):
 
         new_img = float_im(tmp_img)  # From [0,255] to [0.,1.]
 
-        print(new_img.shape)
-
         # Augmenting the image  TODO: look into integrating "imgaug" library
         # TODO: I removed "augment_img" from here: ultimately remove from constants?
     else:
-        print("in else")
         return img
 
-    print("success return")
     return new_img
 
 

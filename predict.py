@@ -1,123 +1,126 @@
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
-import skimage
-from skimage import io
-#from PIL import Image
+import skimage.io
 
-import utils
-from constants import img_width
-from constants import img_height
-from constants import batch_size
-from constants import verbosity
-from constants import get_model_save_path
+from keras.models import load_model
+from keras.optimizers import Adam
+from keras.optimizers import Adadelta
+
+from constants import save_dir
+from constants import model_name
+from constants import crops_p_img
 from constants import tests_path
+from constants import img_height
+from constants import img_width
+from constants import scale_fact
+from utils import float_im
+from utils import crop_center
 
 
-# TODO: Add an `args.parser` to be able to predict directly from command prompt
-# TODO: Add a function to take images from folder and test with them directly (no ground_truth)
-def run_tests(model):
-    x_test, y_test = extract_tests()
+parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    evaluate(model, x_test, y_test)
-    predicts(model, x_test, y_test)
+parser.add_argument('-a', '--amount', type=int, default=crops_p_img,
+                    help='how many (cropped to 128x128) samples to predict from within the image')
+parser.add_argument('image', type=str,
+                    help='image name (example: "bird.png") that must be inside the "./input/" folder')
+parser.add_argument('-m', '--model', type=str, default=model_name,
+                    help='model name (in the "./save/" folder), followed by ".h5"')
+parser.add_argument('-r', '--random', action="store_true",  # if var is in args, set to TRUE, else, set to FALSE
+                    help='flag that will select a random 128x128 area in the input image instead of the center')
+parser.add_argument('-f', '--full', action="store_true",  # if var is in args, set to TRUE, else, set to FALSE
+                    help='(WIP) flag that will get the whole image to be processed by the network')
 
-
-def extract_tests():
-    print("Starting tests. Extracting images to feed.")
-    x = []
-    y = []
-
-    for i in range(11):
-        # Extracting the benchmark images (HR)
-        y_test = utils.crop_center(skimage.io.imread(tests_path + str(i) + ".png"), img_width, img_height)
-        y.append(y_test)
-        # Extracting middle part for prediction test
-        x.append(utils.single_downscale(y_test))
-
-    return np.array(x), np.array(y)
+args = parser.parse_args()
 
 
-def evaluate(model, x_test, y_test):
-    print("Starting evaluation.")
-
-    test_loss = model.evaluate(x_test,
-                               y_test,
-                               batch_size=batch_size,
-                               verbose=verbosity)
-
-    print('[evaluate] Test loss:', test_loss)
-    #print('[evaluate] Test accuracy:', test_acc)
-
-    # score = model.evaluate(x_test, y_test, verbose=False)
-    # model.metrics_names
-    # print('Test score: ', score[0])  # Loss on test
-    # print('Test accuracy: ', score[1])
+# TODO: redo picture 1 and 2 in "input/downscaled"
 
 
-def predicts(model, x_test, y_test):
-    print("Starting predictions.")
+def predict(args):
+    model = load_model(save_dir + '/' + args.model)
 
-    # # Trying to make predictions on a bunch of images (works in batches)
-    # predictions = model.predict(images)
+    # Setting up the proper optimizer       TODO: needed?
+    if args.model == "my_full_model.h5":
+        optimizer = Adadelta(lr=1.0,
+                             rho=0.95,
+                             epsilon=None,
+                             decay=0.0)
+    else:
+        optimizer = Adam(lr=0.001,
+                         beta_1=0.9,
+                         beta_2=0.999,
+                         epsilon=None,
+                         decay=0.0,
+                         amsgrad=False)
 
-    # Extracting predictions
+    model.compile(optimizer=optimizer,
+                  loss='mean_squared_error')
+
+    image = skimage.io.imread(tests_path + args.image)
+
+    if image.shape[0] == 128:
+        args.amount = 1
+
     predictions = []
-    for i in range(len(x_test)):
-        input_img = (np.expand_dims(x_test[i], 0))       # Add the image to a batch where it's the only member
-        predictions.append(model.predict(input_img)[0])  # returns a list of lists, one for each image in the batch
+    images = []
 
-    # # Taking the BICUBIC enlargment     TODO: figure out without taking the file from path again
-    # bic1 = Image.open(data_path + '11.jpg').thumbnail((img_width, img_height), Image.BICUBIC)
-    # bic2 = Image.open(data_path + '12.jpg').thumbnail((img_width, img_height), Image.BICUBIC)
+    # TODO: integrate FULL IMAGE
+    # if args.full:
+    #     images.append(image)
+    #     # Hack because GPU can only handle one image at a time
+    #     input_img = (np.expand_dims(images[0], 0))  # Add the image to a batch where it's the only member
+    #     predictions.append(model.predict(input_img)[0])  # returns a list of lists, one for each image in the batch
+    # else:
+    if True:
+        for i in range(args.amount):
+            # Cropping to fit input size
+            if (args.random or args.amount > 1) and image.shape[0] > 128:
+                images.append(random_crop(image))
+            else:
+                images.append(crop_center(image, img_width//scale_fact, img_height//scale_fact))
 
-    # # TODO: Saving predictions
-    # i = 0
-    # save_path = "pictures/final_tests/predictions/"
-    # print("Saving the 4 outputs as images")
-    # for pred in predictions:
-    #     utils.save_np_img(pred, save_path, str(i) + ".png")
-    #     i += 1
+            input_img = (np.expand_dims(images[i], 0))
+            predictions.append(model.predict(input_img)[0])
 
-    # https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.savefig
-    # plt.savefig('pictures/final_tests/predictions/results.png', frameon=True) TODO: not working (white image)
-
-    # Showing output vs expected image
     for i in range(len(predictions)):
-        show_pred_output(x_test[i], predictions[i], y_test[i])
-
-    prompt_model_save(model)
+        show_pred_output(images[i], predictions[i])
 
 
-def show_pred_output(input, pred, truth):
+# adapted from: https://stackoverflow.com/a/52463034/9768291
+def random_crop(img):
+    crop_h, crop_w = img_width//scale_fact, img_height//scale_fact
+    print("Shape of input image to crop:", img.shape[0], img.shape[1])
+
+    if (img.shape[0] >= crop_h) and (img.shape[1] >= crop_w):
+        # Cropping a random part of the image
+        rand_h = np.random.randint(0, img.shape[0]-crop_h)
+        rand_w = np.random.randint(0, img.shape[1]-crop_w)
+        print("Random position for the crop:", rand_h, rand_w)
+        tmp_img = img[rand_h:rand_h+crop_h, rand_w:rand_w+crop_w]
+
+        new_img = float_im(tmp_img)  # From [0,255] to [0.,1.]
+    else:
+        return img
+
+    return new_img
+
+
+def show_pred_output(input, pred):
     plt.figure(figsize=(20, 20))
     plt.suptitle("Results")
 
-    plt.subplot(1, 3, 1)
+    plt.subplot(1, 2, 1)
     plt.title("Input: 128x128")
     plt.imshow(input, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
-    plt.subplot(1, 3, 2)
+    plt.subplot(1, 2, 2)
     plt.title("Output: 512x512")
     plt.imshow(pred, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
-
-    plt.subplot(1, 3, 3)
-    plt.title("Target (HR): 512x512")
-    plt.imshow(truth, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     plt.show()
 
 
-def prompt_model_save(model):
-    save_bool = input("Save progress from this model (y/n) ?\n")
-    if save_bool == "y":
-        model.save(get_model_save_path())
-        print("Model saved! :)")
-        # model.save_weights('save/model_weights.h5')
-    del model  # deletes the existing model  # TODO: use it even if not saving?
-
-
-# def predict(img_path):
-#     return img_path
-#
-# if __name__ == '__main__':
-#     predict(args)
+if __name__ == '__main__':
+    print("   -  ", args)
+    predict(args)
