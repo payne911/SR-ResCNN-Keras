@@ -11,9 +11,9 @@ from constants import save_dir
 from constants import model_name
 from constants import crops_p_img
 from constants import tests_path
-from constants import img_height
-from constants import img_width
 from constants import scale_fact
+from constants import input_width
+from constants import input_height
 from utils import float_im
 from utils import crop_center
 
@@ -41,7 +41,7 @@ def predict(args):
     model = load_model(save_dir + '/' + args.model)
 
     # Setting up the proper optimizer       TODO: needed?
-    if args.model == "my_full_model.h5":
+    if args.model != "my_model.h5":
         optimizer = Adadelta(lr=1.0,
                              rho=0.95,
                              epsilon=None,
@@ -54,34 +54,32 @@ def predict(args):
                          decay=0.0,
                          amsgrad=False)
 
-    model.compile(optimizer=optimizer,
+    model.compile(optimizer=optimizer,          # TODO: needed ?
                   loss='mean_squared_error')
 
     image = skimage.io.imread(tests_path + args.image)
 
-    if image.shape[0] == 128:
+    if (image.shape[0] == input_width) or args.full:
         args.amount = 1
 
     predictions = []
     images = []
 
-    # TODO: integrate FULL IMAGE
-    # if args.full:
-    #     images.append(image)
-    #     # Hack because GPU can only handle one image at a time
-    #     input_img = (np.expand_dims(images[0], 0))  # Add the image to a batch where it's the only member
-    #     predictions.append(model.predict(input_img)[0])  # returns a list of lists, one for each image in the batch
-    # else:
-    if True:
+    if args.full:
+        images.append(crop_center(image, input_width, input_height))  # Set according to GPU memory  TODO: set in args
+        input_img = (np.expand_dims(images[0], 0))       # Add the image to a batch where it's the only member
+        predictions.append(model.predict(input_img)[0])  # returns a list of lists, one for each image in the batch
+    else:
         for i in range(args.amount):
             # Cropping to fit input size
-            if (args.random or args.amount > 1) and image.shape[0] > 128:
+            if (args.random or args.amount > 1) and image.shape[0] > input_width:
                 images.append(random_crop(image))
             else:
-                images.append(crop_center(image, img_width//scale_fact, img_height//scale_fact))
+                images.append(crop_center(image, input_width, input_height))
 
-            input_img = (np.expand_dims(images[i], 0))
-            predictions.append(model.predict(input_img)[0])
+            # Hack because GPU can only handle one image at a time
+            input_img = (np.expand_dims(images[i], 0))       # Add the image to a batch where it's the only member
+            predictions.append(model.predict(input_img)[0])  # returns a list of lists, one for each image in the batch
 
     for i in range(len(predictions)):
         show_pred_output(images[i], predictions[i])
@@ -89,7 +87,7 @@ def predict(args):
 
 # adapted from: https://stackoverflow.com/a/52463034/9768291
 def random_crop(img):
-    crop_h, crop_w = img_width//scale_fact, img_height//scale_fact
+    crop_h, crop_w = input_width, input_height
     print("Shape of input image to crop:", img.shape[0], img.shape[1])
 
     if (img.shape[0] >= crop_h) and (img.shape[1] >= crop_w):
@@ -111,11 +109,11 @@ def show_pred_output(input, pred):
     plt.suptitle("Results")
 
     plt.subplot(1, 2, 1)
-    plt.title("Input: 128x128")
+    plt.title("Input: " + str(input_width // scale_fact) + "x" + str(input_height // scale_fact))
     plt.imshow(input, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     plt.subplot(1, 2, 2)
-    plt.title("Output: 512x512")
+    plt.title("Output: " + str(input_width) + "x" + str(input_height))
     plt.imshow(pred, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     plt.show()

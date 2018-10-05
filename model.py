@@ -10,8 +10,6 @@ from keras.utils import plot_model
 from keras.models import load_model
 from constants import get_model_save_path
 
-from constants import img_width
-from constants import img_height
 from constants import img_depth
 from constants import res_blocks
 from constants import scale_fact
@@ -33,7 +31,7 @@ def setUpModel(x_train, y_train):
     # TODO: To visualize internal layers (https://stackoverflow.com/questions/41711190/keras-how-to-get-the-output-of-each-layer/41712013#41712013)
 
     # Head module
-    input = Input(shape=(img_height//scale_fact, img_width//scale_fact, img_depth))
+    input = Input(shape=(None, None, img_depth))  # None = can take inputs of different sizes
     conv0 = Conv2D(filters, kernel_size, strides=strides, padding='same')(input)
 
     # Body module

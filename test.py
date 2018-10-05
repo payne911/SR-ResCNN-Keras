@@ -4,8 +4,9 @@ import skimage.io
 #from PIL import Image
 
 import utils
-from constants import img_width
-from constants import img_height
+from constants import input_width
+from constants import input_height
+from constants import scale_fact
 from constants import batch_size
 from constants import verbosity
 from constants import get_model_save_path
@@ -26,10 +27,10 @@ def extract_tests():
 
     for i in range(11):
         # Extracting the benchmark images (HR)
-        y_test = utils.crop_center(skimage.io.imread(tests_path + str(i) + ".png"), img_width, img_height)
+        y_test = utils.crop_center(skimage.io.imread(tests_path + str(i) + ".png"), input_width * scale_fact, input_height * scale_fact)
         y.append(y_test)
         # Extracting middle part for prediction test
-        x.append(utils.single_downscale(y_test))
+        x.append(utils.single_downscale(y_test, input_width * scale_fact, input_height * scale_fact))
 
     return np.array(x), np.array(y)
 
@@ -39,7 +40,7 @@ def evaluate(model, x_test, y_test):
 
     test_loss = model.evaluate(x_test,
                                y_test,
-                               batch_size=batch_size,
+                               batch_size=1,
                                verbose=verbosity)
 
     print('[evaluate] Test loss:', test_loss)
@@ -90,15 +91,15 @@ def show_pred_output(input, pred, truth):
     plt.suptitle("Results")
 
     plt.subplot(1, 3, 1)
-    plt.title("Input: 128x128")
+    plt.title("Input: " + str(input_width) + "x" + str(input_height))
     plt.imshow(input, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     plt.subplot(1, 3, 2)
-    plt.title("Output: 512x512")
+    plt.title("Output: " + str(input_width * scale_fact) + "x" + str(input_height * scale_fact))
     plt.imshow(pred, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     plt.subplot(1, 3, 3)
-    plt.title("Target (HR): 512x512")
+    plt.title("Target (HR): " + str(input_width * scale_fact) + "x" + str(input_height * scale_fact))
     plt.imshow(truth, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     plt.show()

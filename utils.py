@@ -19,7 +19,8 @@ from constants import load_model
 
 def loadData():
     print("Loading data.")
-    images = [float_im(skimage.io.imread(path)) for path in glob.glob(y_data_path + "*.png")]  # TODO: customize with command line
+    # TODO: return to "float_im" once certain that 216x216 is fine, or the generated dataset now has proper dimension
+    images = [crop_center(skimage.io.imread(path), img_width, img_height) for path in glob.glob(y_data_path + "*.png")]
 
     print("Converting to Numpy Array.")
     setUpData(np.array(images))
@@ -31,6 +32,13 @@ def float_im(img):
 
 # Adapted from: https://stackoverflow.com/a/39382475/9768291
 def crop_center(img, crop_x, crop_y):
+    """
+    To crop the center of an image
+    :param img: the image
+    :param crop_x: how much to crop on the x-axis
+    :param crop_y: how much to crop on the y-axis
+    :return: cropped image, floated (values between 0 and 1)
+    """
     y, x, _ = img.shape
     start_x = x//2-(crop_x // 2)
     start_y = y//2-(crop_y // 2)
@@ -74,21 +82,23 @@ def downscale(images):
     x = []
 
     for img in images:
-        x.append(single_downscale(img))
+        x.append(single_downscale(img, img_width, img_height))
 
     return np.array(x)
 
 
-def single_downscale(img):
+def single_downscale(img, width, height):
     """
     Downscales an image by the factor set in the 'constants'
     :param img: the image
+    :param width: width to be downscaled
+    :param height: height to be downscaled
     :return: returns a float-type numpy by default (values between 0 and 1)
     """
     # TODO: look into `skimage.transform.downscale_local_mean()`
     scaled_img = skimage.transform.resize(
         img,
-        (img_width // scale_fact, img_height // scale_fact),
+        (width // scale_fact, height // scale_fact),
         mode='reflect',
         anti_aliasing=True)
 
