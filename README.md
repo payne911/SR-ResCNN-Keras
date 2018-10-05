@@ -51,17 +51,17 @@ hdf5 (h5py?)
 ```
 
 ### Pre-trained models
-I have three pre-trained models.
+I have **three** pre-trained models.
 
-`my_model.h5`: An earlier one that used 14 images (that were data augmented) and the `Adam` optimizer.
+**`my_model.h5`**: An earlier one that used 14 images (that were data augmented) and the `Adam` optimizer.
 
-`my_full_model.h5`: Another one that used a much bigger part of the real dataset I had set aside while developing the code. That one used the `Adadelta` optimizer.
+**`my_full_model.h5`**: Another one that used a much bigger part of the real dataset I had set aside while developing the code. That one used the `Adadelta` optimizer.
 
 Those two are actually restricted to having input of dimension ``128x128x3``.
 
 After discussing with a friend, I realized that I could actually train this model to allow varying input sizes for predictions... hence the third model.
 
-``unrestricted_model.h5``: This model uses the `Adadelta` optimizer and was trained with smaller sized inputs to permit bigger batch sizes (shorter train times, but more epochs required to achieve same accuracy).
+**``unrestricted_model.h5``**: This model uses the `Adadelta` optimizer and was trained with smaller sized inputs to permit bigger batch sizes (shorter train times, but more epochs required to achieve same accuracy).
 
 They are all in the `save` folder. All these files include the weights AND the optimizer's state (so that you can train with that too).
 
