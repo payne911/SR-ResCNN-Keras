@@ -51,11 +51,19 @@ hdf5 (h5py?)
 ```
 
 ### Pre-trained models
-I have two pre-trained models. An earlier one that used 14 images (that were data augmented) and the `Adam` optimizer.
+I have three pre-trained models.
 
-And another one that used the whole real data set I had set aside while developing the code. That one used the `Adadelta` optimizer.
+`my_model.h5`: An earlier one that used 14 images (that were data augmented) and the `Adam` optimizer.
 
-They are both in the `save` folder. The first one is `my_model.h5` and the second one is `my_full_model.h5`. Both these files include the weights AND the optimizer's state (so that you can train with that too).
+`my_full_model.h5`: Another one that used a much bigger part of the real dataset I had set aside while developing the code. That one used the `Adadelta` optimizer.
+
+Those two are actually restricted to having input of dimension ``128x128x3``.
+
+After discussing with a friend, I realized that I could actually train this model to allow varying input sizes for predictions... hence the third model.
+
+``unrestricted_model.h5``: This model uses the `Adadelta` optimizer and was trained with smaller sized inputs to permit bigger batch sizes (shorter train times, but more epochs required to achieve same accuracy).
+
+They are all in the `save` folder. All these files include the weights AND the optimizer's state (so that you can train with that too).
 
 I plan on providing the architecture as a JSON and the weights as individual files so that those can be used as "ready for integration" (I believe Android requires those files, though I still need to look that up).
 
@@ -108,9 +116,9 @@ For now, I'll just be lazy and copy paste its content so that you can have a rou
 ############################
 ##        PREPARE         ##
 ############################
-y_data_path = 'dataset/DIV2K/DIV2K/to_merge/2/'  # Path from where the "y_train" data will be loaded (512x512x3 images)
+y_data_path = 'dataset/DIV2K/DIV2K/to_merge/3/'  # Path from where the "y_train" data will be loaded (512x512x3 images)
 hr_img_path = 'dataset/DIV2K/DIV2K/DIV2K_train_HR/'  # Path where the "y_train" data will be extracted from (if `prepare_img` is set to True)
-crops_p_img = 7      # Number of samples/crops taken per HR image (to get the target output size)
+crops_p_img = 10     # Number of samples/crops taken per HR image (to get the target output size)
 augment_img = True   # Augment data with flips (each image will generate 3 more images)
 prepare_img = False  # True => generate cropped images from HR (uses the paths set just above)
 # # Deprecated: (used for mini tests)
@@ -121,12 +129,12 @@ prepare_img = False  # True => generate cropped images from HR (uses the paths s
 ############################
 ##       SAVE/LOAD        ##
 ############################
-load_model  = True  # Should we load a saved model from memory ?
-save_dir    = 'save'  # folder name where the model will be saved
-model_name  = 'my_full_model.h5'  # Name of the model that is to be loaded/saved
+load_model = True    # Should we load a saved model from memory ?
+save_dir   = 'save'  # folder name where the model will be saved
+model_name = 'unrestricted_model.h5'  # Name of the model that is to be loaded/saved
 # TODO:
-model_json  = 'model_architecture.json'
-weights     = 'model_weights.h5'
+model_json = 'model_architecture.json'
+weights    = 'model_weights.h5'
 
 
 def get_model_save_path():
@@ -136,8 +144,8 @@ def get_model_save_path():
 ############################
 ##         MODEL          ##
 ############################
-img_width  = 512     # size of the output size the network will be trained for
-img_height = 512     # this size divided by the scale_fact is the input size of the network
+img_width  = 216     # size of the output size the network will be trained for
+img_height = 216     # this size divided by the scale_fact is the input size of the network
 img_depth  = 3    # number of channels (RGB)
 scale_fact = 4    # resolution multiplication factor
 res_blocks = 3    # a power of 2, minus 1
@@ -147,14 +155,16 @@ res_blocks = 3    # a power of 2, minus 1
 ##        TRAINING        ##
 ############################
 epochs     = 6  # 6 works well
-batch_size = 1  # adjust based on your GPU memory (maximize memory usage)
+batch_size = 7  # adjust based on your GPU memory (maximize memory usage)
 verbosity  = 2  # message feedback from Keras (0, 1 or 2): higher means more verbose
 
 
 ############################
 ##       EVALUATION       ##
 ############################
-tests_path = 'input/'  # path to the folder containing the HR images to test with
+tests_path   = 'input/'  # path to the folder containing the HR images to test with
+input_width  = 128       # width size of the input used for prediction
+input_height = 128       # height size of the input used for prediction
 ```
 
 ## Built With
