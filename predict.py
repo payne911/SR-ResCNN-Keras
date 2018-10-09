@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 import skimage.io
 
 from keras.models import load_model
-from keras.optimizers import Adam
-from keras.optimizers import Adadelta
 
 from constants import verbosity
 from constants import save_dir
@@ -40,23 +38,6 @@ args = parser.parse_args()
 
 def predict(args):
     model = load_model(save_dir + '/' + args.model)
-
-    # Setting up the proper optimizer       TODO: needed?
-    if args.model != "my_model.h5":
-        optimizer = Adadelta(lr=1.0,
-                             rho=0.95,
-                             epsilon=None,
-                             decay=0.0)
-    else:
-        optimizer = Adam(lr=0.001,
-                         beta_1=0.9,
-                         beta_2=0.999,
-                         epsilon=None,
-                         decay=0.0,
-                         amsgrad=False)
-
-    model.compile(optimizer=optimizer,          # TODO: needed ?
-                  loss='mean_squared_error')
 
     image = skimage.io.imread(tests_path + args.image)
 
@@ -95,8 +76,11 @@ def predict(args):
             input_img = (np.expand_dims(images[i], 0))       # Add the image to a batch where it's the only member
             predictions.append(model.predict(input_img)[0])  # returns a list of lists, one for each image in the batch
 
+    # Comparing originals with the SR-versions
     for i in range(len(predictions)):
         show_pred_output(images[i], predictions[i])
+
+    return predictions, image
 
 
 # adapted from: https://stackoverflow.com/a/52463034/9768291
@@ -186,6 +170,33 @@ def ceildiv(a, b):
     return -(-a // b)
 
 
+def reconstruct(predictions):
+    width_length = 0
+    height_length = 0
+
+    # TODO: properly extract the size of the full image
+    for width_imgs in predictions[0]:
+        width_length += width_imgs.shape[1]
+    for height_imgs in predictions:
+        height_length += height_imgs[0].shape[0]
+    print(width_length, height_length)
+
+    full_image = np.empty(shape=(height_length, width_length))
+    print(full_image.shape)
+
+    # TODO: properly merge the crops back into a single image
+    for height in range(len(predictions[0])):
+        for width in range(len(predictions)):
+            # concatenate here
+            print(height, width)
+
+    return full_image
+
+
 if __name__ == '__main__':
     print("   -  ", args)
-    predict(args)
+    preds, original = predict(args)  # returns the predictions along with the original
+
+    # # TODO: reconstruct image
+    # enhanced = reconstruct(preds)  # reconstructs the enhanced image from predictions
+    # show_pred_output(original, enhanced)

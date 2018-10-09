@@ -65,7 +65,6 @@ def ceildiv(a, b):
 print("Warning: numpy puts HEIGHT before WIDTH. Results shown reverse this and place WIDTH first.")
 result = seq_crop(image)
 
-# TODO: display output with Matplot as sanity check
 plt.figure(figsize=(20, 20))
 plt.suptitle("Crops")
 
