@@ -76,9 +76,9 @@ def predict(args):
             input_img = (np.expand_dims(images[i], 0))       # Add the image to a batch where it's the only member
             predictions.append(model.predict(input_img)[0])  # returns a list of lists, one for each image in the batch
 
-    # Comparing originals with the SR-versions
-    for i in range(len(predictions)):
-        show_pred_output(images[i], predictions[i])
+    # # Comparing originals with the SR-versions
+    # for i in range(len(predictions)):
+    #     show_pred_output(images[i], predictions[i])
 
     return predictions, image
 
@@ -170,33 +170,23 @@ def ceildiv(a, b):
     return -(-a // b)
 
 
-def reconstruct(predictions):
-    width_length = 0
-    height_length = 0
-
-    # TODO: properly extract the size of the full image
-    for width_imgs in predictions[0]:
-        width_length += width_imgs.shape[1]
-    for height_imgs in predictions:
-        height_length += height_imgs[0].shape[0]
-    print(width_length, height_length)
-
-    full_image = np.empty(shape=(height_length, width_length))
-    print(full_image.shape)
-
-    # TODO: properly merge the crops back into a single image
-    for height in range(len(predictions[0])):
-        for width in range(len(predictions)):
-            # concatenate here
-            print(height, width)
-
-    return full_image
+# adapted from  https://stackoverflow.com/a/52733370/9768291
+def reconstruct(predictions):  # (12, 512, 512, 3)
+    H = np.cumsum([x[0].shape[0] for x in predictions])
+    W = np.cumsum([x.shape[1] for x in predictions[0]])
+    D = predictions[0][0]
+    print("H", H[-1], "W", W[-1], "D", D.shape[1], D.dtype)
+    recon = np.empty((H[-1], W[-1], D.shape[1]), D.dtype)
+    for rd, rs in zip(np.split(recon, H[:-1], 0), predictions):
+        for d, s in zip(np.split(rd, W[:-1], 1), rs):
+            d[...] = s
+    return recon
 
 
 if __name__ == '__main__':
     print("   -  ", args)
     preds, original = predict(args)  # returns the predictions along with the original
 
-    # # TODO: reconstruct image
-    # enhanced = reconstruct(preds)  # reconstructs the enhanced image from predictions
-    # show_pred_output(original, enhanced)
+    # TODO: reconstruct image
+    enhanced = reconstruct(preds)  # reconstructs the enhanced image from predictions
+    show_pred_output(original, enhanced)
