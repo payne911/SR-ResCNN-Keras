@@ -29,19 +29,19 @@ def get_model_save_path():
 ############################
 ##         MODEL          ##
 ############################
-img_width  = 216     # size of the output size the network will be trained for
-img_height = 216     # this size divided by the scale_fact is the input size of the network
-img_depth  = 3    # number of channels (RGB)
 scale_fact = 4    # resolution multiplication factor
-res_blocks = 3    # a power of 2, minus 1
+res_blocks = 3    # amount of residual blocks the network has (+1)
 
 
 ############################
 ##        TRAINING        ##
 ############################
-epochs     = 6  # 6 works well
-batch_size = 7  # adjust based on your GPU memory (maximize memory usage)
-verbosity  = 2  # message feedback from Keras (0, 1 or 2): higher means more verbose
+img_width  = 216    # size of the output of the network (play around along with batch_size to maximize memory usage)
+img_height = 216    # this size divided by the scale_fact is the input size of the network
+img_depth  = 3    # number of channels (RGB)
+epochs     = 6    # 6 works well
+batch_size = 7    # adjust based on your GPU memory (maximize memory usage)
+verbosity  = 2    # message feedback (0, 1 or 2): higher means more verbose
 
 
 ############################

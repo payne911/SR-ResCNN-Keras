@@ -18,6 +18,7 @@ Here is a simple image of the current progress made (trained with 14 images that
 The images used were, of course, never revealed to the network during training.
 
 I am currently collecting samples coming from the more recent model that was trained using the DIV2K dataset.
+More examples of results can be [found here](https://github.com/payne911/SR-ResCNN-Keras-/tree/master/pictures).
 
 ### [DIV2K dataset](http://www.vision.ee.ethz.ch/~timofter/publications/Agustsson-CVPRW-2017.pdf)
 You can download it [here](https://cv.snu.ac.kr/research/EDSR/DIV2K.tar) (7.1GB).
@@ -80,15 +81,19 @@ You can then open it with your preferred IDE and start messing around. Minor twe
 
 ### Using the model to increase the resolution of an image
 
-As it is, I have not implemented the option to input a full-sized image. Only portions of 128x128 pixels will be shown to you as samples.
-
-Put the image inside the ``input`` folder, and run the following command (after activating your virtual environment):
+Put your image inside the ``input`` folder, and run the following command (after activating your virtual environment):
 
 ```
 python predict.py your_image.png
 ```
 
 This should return you a certain amount of crops from the image. Other options are available:
+
+```
+python predict.py your_image.png -f
+```
+
+Will process your entire image and output the result (still a WIP).
 
 ```
 python predict.py your_image.png -a=3
@@ -116,7 +121,7 @@ For now, I'll just be lazy and copy paste its content so that you can have a rou
 ############################
 ##        PREPARE         ##
 ############################
-y_data_path = 'dataset/DIV2K/DIV2K/to_merge/3/'  # Path from where the "y_train" data will be loaded (512x512x3 images)
+y_data_path = 'dataset/DIV2K/DIV2K/to_merge/4/sub/'  # Path from where the "y_train" data will be loaded (512x512x3 images)
 hr_img_path = 'dataset/DIV2K/DIV2K/DIV2K_train_HR/'  # Path where the "y_train" data will be extracted from (if `prepare_img` is set to True)
 crops_p_img = 10     # Number of samples/crops taken per HR image (to get the target output size)
 augment_img = True   # Augment data with flips (each image will generate 3 more images)
@@ -144,19 +149,19 @@ def get_model_save_path():
 ############################
 ##         MODEL          ##
 ############################
-img_width  = 216     # size of the output size the network will be trained for
-img_height = 216     # this size divided by the scale_fact is the input size of the network
-img_depth  = 3    # number of channels (RGB)
 scale_fact = 4    # resolution multiplication factor
-res_blocks = 3    # a power of 2, minus 1
+res_blocks = 3    # amount of residual blocks the network has (+1)
 
 
 ############################
 ##        TRAINING        ##
 ############################
-epochs     = 6  # 6 works well
-batch_size = 7  # adjust based on your GPU memory (maximize memory usage)
-verbosity  = 2  # message feedback from Keras (0, 1 or 2): higher means more verbose
+img_width  = 216    # size of the output of the network (play around along with batch_size to maximize memory usage)
+img_height = 216    # this size divided by the scale_fact is the input size of the network
+img_depth  = 3    # number of channels (RGB)
+epochs     = 6    # 6 works well
+batch_size = 7    # adjust based on your GPU memory (maximize memory usage)
+verbosity  = 2    # message feedback (0, 1 or 2): higher means more verbose
 
 
 ############################
@@ -185,6 +190,7 @@ My thanks go to:
 
 * [sds](https://stackoverflow.com/users/7350191/sds): a kind StackOverflow user that has helped understand a few things when I was just starting with this project.
 * [this repo](https://github.com/thstkdgus35/EDSR-PyTorch) which provided me with some insights on the actual implementation discussed in [this paper](https://arxiv.org/pdf/1707.02921.pdf).
+* Stanford University's [course](http://cs231n.stanford.edu/index.html) on CNN: [YouTube videos](https://www.youtube.com/playlist?list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv) and [syllabus](http://cs231n.stanford.edu/syllabus.html).
 
 ### TODO
 Notes to self.
