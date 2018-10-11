@@ -17,13 +17,12 @@ The latest results came from the model that can take any size as input and that 
 
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results26.png)
 
-Here is a simple image of the current progress made (trained with 14 images that were data-augmented):
+And if you're curious, here is an older result that came from another model that was trained with only 14 images that were data-augmented (that one used the `Adam` optimizer):
 
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results4.png)
 
 The images used were, of course, never revealed to the network during training.
 
-I am currently collecting samples coming from the more recent model that was trained using the DIV2K dataset.
 More examples of results can be [found here](https://github.com/payne911/SR-ResCNN-Keras-/tree/master/pictures).
 
 ### [DIV2K dataset](http://www.vision.ee.ethz.ch/~timofter/publications/Agustsson-CVPRW-2017.pdf)
