@@ -11,6 +11,12 @@ This is still a Work In Progress.
 Hardware and time limitations prevent me from perfecting this project too much, but it has already reached a decent state. :)
 
 # Demonstration
+The latest results came from the model that can take any size as input and that was trained with the `Adadelta` optimizer with a decent part of the whole dataset:
+
+![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results25.png)
+
+![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results26.png)
+
 Here is a simple image of the current progress made (trained with 14 images that were data-augmented):
 
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results4.png)
@@ -87,19 +93,9 @@ Put your image inside the ``input`` folder, and run the following command (after
 python predict.py your_image.png
 ```
 
-This should return you a certain amount of crops from the image. Other options are available:
+This will process your entire image and output the result.
 
-```
-python predict.py your_image.png -f
-```
-
-Will process your entire image and output the result (still a WIP).
-
-```
-python predict.py your_image.png -a=3
-```
-
-Will show you only 3 samples from your image, for example. For a full list of the commands available to you:
+For a full list of the commands available to you:
 
 ```
 python predict.py -h

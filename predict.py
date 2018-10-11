@@ -2,32 +2,26 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 import skimage.io
+#from PIL import Image
 
 from keras.models import load_model
 
 from constants import verbosity
 from constants import save_dir
 from constants import model_name
-from constants import crops_p_img
 from constants import tests_path
-from constants import scale_fact
 from constants import input_width
 from constants import input_height
 from utils import float_im
-from utils import crop_center
 
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-parser.add_argument('-a', '--amount', type=int, default=crops_p_img,
-                    help='how many (cropped to 128x128) samples to predict from within the image')
 parser.add_argument('image', type=str,
                     help='image name (example: "bird.png") that must be inside the "./input/" folder')
 parser.add_argument('-m', '--model', type=str, default=model_name,
                     help='model name (in the "./save/" folder), followed by ".h5"')
-parser.add_argument('-r', '--random', action="store_true",  # if var is in args, set to TRUE, else, set to FALSE
-                    help='flag that will select a random 128x128 area in the input image instead of the center')
-parser.add_argument('-f', '--full', action="store_true",  # if var is in args, set to TRUE, else, set to FALSE
+parser.add_argument('-s', '--save', type=str, default='your_image.png',
                     help='(WIP) flag that will get the whole image to be processed by the network')
 
 args = parser.parse_args()
@@ -41,66 +35,26 @@ def predict(args):
 
     image = skimage.io.imread(tests_path + args.image)
 
-    if (image.shape[0] == input_width) or args.full:
-        args.amount = 1
-
     predictions = []
     images = []
-    crops = []
 
-    if args.full:
-        crops = seq_crop(image)  # crops into multiple sub-parts the image based on 'input_' constants
+    crops = seq_crop(image)  # crops into multiple sub-parts the image based on 'input_' constants
 
-        for i in range(len(crops)):  # amount of vertical crops
-            for j in range(len(crops[0])):  # amount of horizontal crops
-                current_image = crops[i][j]
-                images.append(current_image)
+    for i in range(len(crops)):  # amount of vertical crops
+        for j in range(len(crops[0])):  # amount of horizontal crops
+            current_image = crops[i][j]
+            images.append(current_image)
 
-        print("Moving on to predictions. Amount:", len(images))
+    print("Moving on to predictions. Amount:", len(images))
 
-        for p in range(len(images)):
-            if p%3 == 0 and verbosity == 2:
-                print("--prediction #", p)
-
-            # Hack because GPU can only handle one image at a time
-            input_img = (np.expand_dims(images[p], 0))       # Add the image to a batch where it's the only member
-            predictions.append(model.predict(input_img)[0])  # returns a list of lists, one for each image in the batch
-    else:  # if the "-f" flag isn't set
-        for i in range(args.amount):
-            # Cropping to fit input size
-            if (args.random or args.amount > 1) and image.shape[0] > input_width:
-                images.append(random_crop(image))
-            else:
-                images.append(crop_center(image, input_width, input_height))
-
-            # Hack because GPU can only handle one image at a time
-            input_img = (np.expand_dims(images[i], 0))       # Add the image to a batch where it's the only member
-            predictions.append(model.predict(input_img)[0])  # returns a list of lists, one for each image in the batch
-
-    # # Comparing originals with the SR-versions
-    # for i in range(len(predictions)):
-    #     show_pred_output(images[i], predictions[i])
+    for p in range(len(images)):
+        if p%3 == 0 and verbosity == 2:
+            print("--prediction #", p)
+        # Hack because GPU can only handle one image at a time
+        input_img = (np.expand_dims(images[p], 0))       # Add the image to a batch where it's the only member
+        predictions.append(model.predict(input_img)[0])  # returns a list of lists, one for each image in the batch
 
     return predictions, image, crops
-
-
-# adapted from: https://stackoverflow.com/a/52463034/9768291
-def random_crop(img):
-    crop_h, crop_w = input_width, input_height
-    print("Shape of input image to crop:", img.shape[0], img.shape[1])
-
-    if (img.shape[0] >= crop_h) and (img.shape[1] >= crop_w):
-        # Cropping a random part of the image
-        rand_h = np.random.randint(0, img.shape[0]-crop_h)
-        rand_w = np.random.randint(0, img.shape[1]-crop_w)
-        print("Random position for the crop:", rand_h, rand_w)
-        tmp_img = img[rand_h:rand_h+crop_h, rand_w:rand_w+crop_w]
-
-        new_img = float_im(tmp_img)  # From [0,255] to [0.,1.]
-    else:
-        return img
-
-    return new_img
 
 
 def show_pred_output(input, pred):
@@ -108,11 +62,11 @@ def show_pred_output(input, pred):
     plt.suptitle("Results")
 
     plt.subplot(1, 2, 1)
-    plt.title("Input: " + str(input_width // scale_fact) + "x" + str(input_height // scale_fact))
+    plt.title("Input : " + str(input.shape[1]) + "x" + str(input.shape[0]))
     plt.imshow(input, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     plt.subplot(1, 2, 2)
-    plt.title("Output: " + str(input_width) + "x" + str(input_height))
+    plt.title("Output : " + str(pred.shape[1]) + "x" + str(pred.shape[0]))
     plt.imshow(pred, cmap=plt.cm.binary).axes.get_xaxis().set_visible(False)
 
     plt.show()
@@ -162,25 +116,24 @@ def crop_precise(img, coord_x, coord_y, width_length, height_length):
 
 # from  https://stackoverflow.com/a/17511341/9768291
 def ceildiv(a, b):
-    """
-    To get the ceiling of a division
-    :param a:
-    :param b:
-    :return:
-    """
     return -(-a // b)
 
 
 # adapted from  https://stackoverflow.com/a/52733370/9768291
-def reconstruct(predictions, crops):  # (12, 512, 512, 3)
-    # TODO: use "crops" to know the shape of the reconstruction
+def reconstruct(predictions, crops):
+
+    # unflatten predictions
+    def nest(data, template):
+        data = iter(data)
+        return [[next(data) for _ in row] for row in template]
+
     if len(crops) != 0:
-        print("use crops")
+        predictions = nest(predictions, crops)
+
     H = np.cumsum([x[0].shape[0] for x in predictions])
     W = np.cumsum([x.shape[1] for x in predictions[0]])
     D = predictions[0][0]
-    print("H", H[-1], "W", W[-1], "D", D.shape[1], D.dtype)
-    recon = np.empty((H[-1], W[-1], D.shape[1]), D.dtype)
+    recon = np.empty((H[-1], W[-1], D.shape[2]), D.dtype)
     for rd, rs in zip(np.split(recon, H[:-1], 0), predictions):
         for d, s in zip(np.split(rd, W[:-1], 1), rs):
             d[...] = s
@@ -189,8 +142,11 @@ def reconstruct(predictions, crops):  # (12, 512, 512, 3)
 
 if __name__ == '__main__':
     print("   -  ", args)
-    preds, original, crops = predict(args)  # returns the predictions along with the original
 
-    # TODO: reconstruct image
-    enhanced = reconstruct(preds, crops)  # reconstructs the enhanced image from predictions
+    preds, original, crops = predict(args)  # returns the predictions along with the original
+    enhanced = reconstruct(preds, crops)    # reconstructs the enhanced image from predictions
+
+    # TODO : save image
+    # Image.fromarray(enhanced, mode="RGB").save('demo.png')
+
     show_pred_output(original, enhanced)
