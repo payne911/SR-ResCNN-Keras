@@ -46,6 +46,7 @@ def predict(args):
 
     predictions = []
     images = []
+    crops = []
 
     if args.full:
         crops = seq_crop(image)  # crops into multiple sub-parts the image based on 'input_' constants
@@ -80,7 +81,7 @@ def predict(args):
     # for i in range(len(predictions)):
     #     show_pred_output(images[i], predictions[i])
 
-    return predictions, image
+    return predictions, image, crops
 
 
 # adapted from: https://stackoverflow.com/a/52463034/9768291
@@ -171,7 +172,10 @@ def ceildiv(a, b):
 
 
 # adapted from  https://stackoverflow.com/a/52733370/9768291
-def reconstruct(predictions):  # (12, 512, 512, 3)
+def reconstruct(predictions, crops):  # (12, 512, 512, 3)
+    # TODO: use "crops" to know the shape of the reconstruction
+    if len(crops) != 0:
+        print("use crops")
     H = np.cumsum([x[0].shape[0] for x in predictions])
     W = np.cumsum([x.shape[1] for x in predictions[0]])
     D = predictions[0][0]
@@ -185,8 +189,8 @@ def reconstruct(predictions):  # (12, 512, 512, 3)
 
 if __name__ == '__main__':
     print("   -  ", args)
-    preds, original = predict(args)  # returns the predictions along with the original
+    preds, original, crops = predict(args)  # returns the predictions along with the original
 
     # TODO: reconstruct image
-    enhanced = reconstruct(preds)  # reconstructs the enhanced image from predictions
+    enhanced = reconstruct(preds, crops)  # reconstructs the enhanced image from predictions
     show_pred_output(original, enhanced)
