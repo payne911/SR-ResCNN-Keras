@@ -2,7 +2,6 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 import skimage.io
-#from PIL import Image
 
 from keras.models import load_model
 
@@ -22,7 +21,7 @@ parser.add_argument('image', type=str,
 parser.add_argument('-m', '--model', type=str, default=model_name,
                     help='model name (in the "./save/" folder), followed by ".h5"')
 parser.add_argument('-s', '--save', type=str, default='your_image.png',
-                    help='(WIP) flag that will get the whole image to be processed by the network')
+                    help='the name of the saved image which will appear inside the "output" folder')
 
 args = parser.parse_args()
 
@@ -72,7 +71,7 @@ def show_pred_output(input, pred):
     plt.show()
 
 
-# adapted from: https://stackoverflow.com/a/52463034/9768291
+# adapted from  https://stackoverflow.com/a/52463034/9768291
 def seq_crop(img):
     """
     To crop the whole image in a list of sub-images of the same size.
@@ -146,7 +145,6 @@ if __name__ == '__main__':
     preds, original, crops = predict(args)  # returns the predictions along with the original
     enhanced = reconstruct(preds, crops)    # reconstructs the enhanced image from predictions
 
-    # TODO : save image
-    # Image.fromarray(enhanced, mode="RGB").save('demo.png')
+    plt.imsave('output/' + args.save, enhanced, cmap=plt.cm.gray)
 
     show_pred_output(original, enhanced)

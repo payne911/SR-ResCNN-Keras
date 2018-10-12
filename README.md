@@ -92,7 +92,11 @@ Put your image inside the ``input`` folder, and run the following command (after
 python predict.py your_image.png
 ```
 
-This will process your entire image and output the result.
+This will process your entire image and output the result. The enhanced-resolution image will be saved in the `output` folder. To set a custom name for the saved image, use:
+
+```
+python predict.py your_image.png -s=your_custom_name.png
+```
 
 For a full list of the commands available to you:
 
