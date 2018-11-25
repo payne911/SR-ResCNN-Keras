@@ -18,6 +18,10 @@ This means that the network most probably has learn how to increase the resoluti
 
 Using the network on an image that actually had a low resolution in the first place might not give the same results.
 
+### Improvement that could be made
+
+You will subtle lines appearing in the output images at every 128 pixels. That's a residue of the network and it could be completely removed with a little bit of work to do overlapped predictions, but as I've already mentioned: I'm running into time constraints due to studies.
+
 # Demonstrations
 The latest results came from the model that can take any size as input and that was trained with the `Adadelta` optimizer with a decent part of the whole dataset:
 
@@ -43,11 +47,13 @@ Here is the result after going through the network:
 
 ![output](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/unbiased.png)
 
-Thus resulting in the following "Results" comparing-image:
+Here is the result after using Paint to just quadruple the size of the input:
+
+![output](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/upscaled_without_network.png)
+
+Thus resulting in the following "Results" comparing-image that my code spits out after running the prediction on the image (through the `predict.py` command-line):
 
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results27.png)
-
-Not bad!
 
 ### [DIV2K dataset](http://www.vision.ee.ethz.ch/~timofter/publications/Agustsson-CVPRW-2017.pdf)
 You can download it [here](https://cv.snu.ac.kr/research/EDSR/DIV2K.tar) (7.1GB).
