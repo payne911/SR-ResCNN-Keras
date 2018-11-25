@@ -35,8 +35,19 @@ More examples of results can be [found here](https://github.com/payne911/SR-ResC
 
 ### Unbiased demonstration
 
-![input](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results4.png)
+About the "**Warning on bias**" section, here is an actual example that came from the wild: a low-resolution image that came as is.
 
+![input](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/input/vivitest.png)
+
+Here is the result after going through the network:
+
+![output](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/unbiased.png)
+
+Thus resulting in the following "Results" comparing-image:
+
+![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results27.png)
+
+Not bad!
 
 ### [DIV2K dataset](http://www.vision.ee.ethz.ch/~timofter/publications/Agustsson-CVPRW-2017.pdf)
 You can download it [here](https://cv.snu.ac.kr/research/EDSR/DIV2K.tar) (7.1GB).
