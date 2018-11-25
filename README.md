@@ -10,7 +10,15 @@ This is still a Work In Progress.
 
 Hardware and time limitations prevent me from perfecting this project too much, but it has already reached a decent state. :)
 
-# Demonstration
+### Possible bias
+
+The demonstrations below are showing images that were originally HR, which were then reduced in size (which pixelated them). This is exactly the kind of images the network was trained on (though the images shown were never used during training, of course).
+
+This means that the network most probably has learn how to increase the resolution of images which possibly had certain patterns associated with the way images have their resolution reduced when they are down-sized.
+
+Using the network on an image that actually had a low resolution in the first place might not give the same results.
+
+# Demonstrations
 The latest results came from the model that can take any size as input and that was trained with the `Adadelta` optimizer with a decent part of the whole dataset:
 
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results25.png)
@@ -24,6 +32,11 @@ And if you're curious, here is an older result that came from another model that
 The images used were, of course, never revealed to the network during training.
 
 More examples of results can be [found here](https://github.com/payne911/SR-ResCNN-Keras-/tree/master/pictures).
+
+### Unbiased demonstration
+
+![input](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results4.png)
+
 
 ### [DIV2K dataset](http://www.vision.ee.ethz.ch/~timofter/publications/Agustsson-CVPRW-2017.pdf)
 You can download it [here](https://cv.snu.ac.kr/research/EDSR/DIV2K.tar) (7.1GB).
@@ -86,7 +99,7 @@ You can then open it with your preferred IDE and start messing around. Minor twe
 
 ### Using the model to increase the resolution of an image
 
-Put your image inside the ``input`` folder, and run the following command (after activating your virtual environment):
+Put your image inside the ``input`` folder, and run the following command (***after activating your virtual environment***):
 
 ```
 python predict.py your_image.png

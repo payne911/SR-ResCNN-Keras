@@ -32,7 +32,8 @@ args = parser.parse_args()
 def predict(args):
     model = load_model(save_dir + '/' + args.model)
 
-    image = skimage.io.imread(tests_path + args.image)
+    image = skimage.io.imread(tests_path + args.image)[:, :, :3]  # removing possible extra channels (Alpha)
+    print("Image shape:", image.shape)
 
     predictions = []
     images = []
@@ -81,7 +82,6 @@ def seq_crop(img):
     :param img: input image
     :return: list of sub-images with defined size
     """
-    print("Shape of input image to crop:", img.shape[1], img.shape[0])
     width_shape = ceildiv(img.shape[1], input_width)
     height_shape = ceildiv(img.shape[0], input_height)
     sub_images = []  # will contain all the cropped sub-parts of the image
