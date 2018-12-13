@@ -20,7 +20,7 @@ Using the network on an image that actually had a low resolution in the first pl
 
 ### Improvement that could be made
 
-You will subtle lines appearing in the output images at every 128 pixels. That's a residue of the network and it could be completely removed with a little bit of work to do overlapped predictions, but as I've already mentioned: I'm running into time constraints due to studies.
+You will notice subtle lines appearing in the output images at every 128 pixels. That's a residue of the network and it could be completely removed with a little bit of work to do overlapped predictions, but as I've already mentioned: I'm running into time constraints due to studies.
 
 # Demonstrations
 The latest results came from the model that can take any size as input and that was trained with the `Adadelta` optimizer with a decent part of the whole dataset:
