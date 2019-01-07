@@ -1,5 +1,5 @@
 # SR-ResCNN
-A Keras implementation of a Super-Resolution Residual CNN.
+A Keras implementation of a Super-Resolution Residual Convolutional Neural Network (CNN).
 
 The goal is to obtain a network that successfully increases the resolution of an image by filling the gaps in a manner that outperforms the generic "bicubic" method.
 
@@ -14,13 +14,15 @@ Hardware and time limitations prevent me from perfecting this project too much, 
 
 The demonstrations below are showing images that were originally HR, which were then reduced in size (which pixelated them). This is exactly the kind of images the network was trained on (though the images shown were never used during training, of course).
 
-This means that the network most probably has learn how to increase the resolution of images which possibly had certain patterns associated with the way images have their resolution reduced when they are down-sized.
+This means that the network most probably has learned how to increase the resolution of images which possibly had certain patterns associated with the way images have their resolution reduced when they are down-sized.
 
 Using the network on an image that actually had a low resolution in the first place might not give the same results.
 
-### Improvement that could be made
+### Improvements that could be made
 
 You will notice subtle lines appearing in the output images at every 128 pixels. That's a residue of the network and it could be completely removed with a little bit of work to do overlapped predictions, but as I've already mentioned: I'm running into time constraints due to studies.
+
+Also, to better counter the bias related to the learning of "reversing the reduction algorithm", different algorithms to reduce the size of the HR images should have been employed rather than always using the same one.
 
 # Demonstrations
 The latest results came from the model that can take any size as input and that was trained with the `Adadelta` optimizer with a decent part of the whole dataset:
@@ -225,6 +227,7 @@ My thanks go to:
 Notes to self.
 
 ```
+* Integrate random size-reduction algorithms for the training-set generation
 * Better integrate TensorBoard (proper feature/image visualization)
 * Use x_test to generate bicubic enlargments
 * Use Keras ImagePreProcessing object
