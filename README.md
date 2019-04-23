@@ -228,6 +228,8 @@ Notes to self.
 
 ```
 * Integrate random size-reduction algorithms for the training-set generation
+* Fix the 128-line aesthetics
+* Integrate `requirements.txt` (https://stackoverflow.com/questions/7225900/how-to-install-packages-using-pip-according-to-the-requirements-txt-file-from-a)
 * Better integrate TensorBoard (proper feature/image visualization)
 * Use x_test to generate bicubic enlargments
 * Use Keras ImagePreProcessing object
