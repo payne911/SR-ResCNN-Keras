@@ -11,7 +11,6 @@ This is still a Work In Progress.
 Hardware and time limitations prevent me from perfecting this project too much, but it has already reached a decent state. :)
 
 ### Possible bias
-
 The demonstrations below are showing images that were originally HR, which were then reduced in size (which pixelated them). This is exactly the kind of images the network was trained on (though the images shown were never used during training, of course).
 
 This means that the network most probably has learned how to increase the resolution of images which possibly had certain patterns associated with the way images have their resolution reduced when they are down-sized.
@@ -19,10 +18,9 @@ This means that the network most probably has learned how to increase the resolu
 Using the network on an image that actually had a low resolution in the first place might not give the same results.
 
 ### Improvements that could be made
+To better counter the bias related to the learning of "reversing the reduction algorithm", different algorithms to reduce the size of the HR images should have been employed rather than always using the same one.
 
-You will notice subtle lines appearing in the output images at every 128 pixels. That's a residue of the network and it could be completely removed with a little bit of work to do overlapped predictions, but as I've already mentioned: I'm running into time constraints due to studies.
-
-Also, to better counter the bias related to the learning of "reversing the reduction algorithm", different algorithms to reduce the size of the HR images should have been employed rather than always using the same one.
+It might also be interesting to integrate more data augmentation within the training phase of the model.
 
 # Demonstrations
 The latest results came from the model that can take any size as input and that was trained with the `Adadelta` optimizer with a decent part of the whole dataset:
@@ -40,7 +38,6 @@ The images used were, of course, never revealed to the network during training.
 More examples of results can be [found here](https://github.com/payne911/SR-ResCNN-Keras-/tree/master/pictures).
 
 ### Unbiased demonstration
-
 About the "**Warning on bias**" section, here is an actual example that came from the wild: a low-resolution image that came as is.
 
 ![input](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/input/vivitest.png)
@@ -88,20 +85,12 @@ scikit-image (skimage)
 hdf5 (h5py?)
 ```
 
-### Pre-trained models
-I have **three** pre-trained models.
+### Pre-trained model
+I have **two** pre-trained models. They are all in the `save` folder. All these files include the weights AND the optimizer's state (so that you can train with that too).
 
-**`my_model.h5`**: An earlier one that used 14 images (that were data augmented) and the `Adam` optimizer.
+**``unrestricted_model.h5``**: This model uses the `Adadelta` optimizer and was trained with smaller sized inputs to permit bigger batch sizes (shorter train times, but more epochs required to achieve same accuracy) compared to the older models. It was *not* trained with the whole dataset.
 
-**`my_full_model.h5`**: Another one that used a much bigger part of the real dataset I had set aside while developing the code. That one used the `Adadelta` optimizer.
-
-Those two are actually restricted to having input of dimension ``128x128x3``.
-
-After discussing with a friend, I realized that I could actually train this model to allow varying input sizes for predictions... hence the third model.
-
-**``unrestricted_model.h5``**: This model uses the `Adadelta` optimizer and was trained with smaller sized inputs to permit bigger batch sizes (shorter train times, but more epochs required to achieve same accuracy).
-
-They are all in the `save` folder. All these files include the weights AND the optimizer's state (so that you can train with that too).
+**``unrestricted_model_laptop_test.h5``**: This model is more or less irrelevant to you and has been used to pursue some tests ran on my laptop, which doesn't have a GPU. It will eventually be replaced with a model trained with the whole dataset.
 
 I plan on providing the architecture as a JSON and the weights as individual files so that those can be used as "ready for integration" (I believe Android requires those files, though I still need to look that up).
 
@@ -143,7 +132,7 @@ To run the code through a command line, activate your virtual environment and ty
 python train.py
 ```
 
-Based on the variables set in the ``constants.py`` file, the flow of the program will be different.
+Based on the variables set in the ``constants.py`` file, the behavior of the program will be different.
 
 #### constants.py
 For now, I'll just be lazy and copy paste its content so that you can have a rough idea of the possibilities:
@@ -152,14 +141,11 @@ For now, I'll just be lazy and copy paste its content so that you can have a rou
 ############################
 ##        PREPARE         ##
 ############################
-y_data_path = 'dataset/DIV2K/DIV2K/to_merge/4/sub/'  # Path from where the "y_train" data will be loaded (512x512x3 images)
-hr_img_path = 'dataset/DIV2K/DIV2K/DIV2K_train_HR/'  # Path where the "y_train" data will be extracted from (if `prepare_img` is set to True)
-crops_p_img = 10     # Number of samples/crops taken per HR image (to get the target output size)
-augment_img = True   # Augment data with flips (each image will generate 3 more images)
-prepare_img = False  # True => generate cropped images from HR (uses the paths set just above)
-# # Deprecated: (used for mini tests)
-# y_data_path = 'pictures/HR/512/'
-# hr_img_path = 'pictures/HR/'
+crops_p_img = 10    # Number of samples/crops taken per HR image (to get the target output size)
+augment_img = True  # Augment data with flips (each image will generate an extra flipped image)
+# Used for (quick) mini tests
+y_data_path = 'pictures/HR/512/'
+hr_img_path = 'pictures/HR/'
 
 
 ############################
@@ -167,7 +153,7 @@ prepare_img = False  # True => generate cropped images from HR (uses the paths s
 ############################
 load_model = True    # Should we load a saved model from memory ?
 save_dir   = 'save'  # folder name where the model will be saved
-model_name = 'unrestricted_model.h5'  # Name of the model that is to be loaded/saved
+model_name = 'unrestricted_model_laptop_test.h5'  # Name of the model that is to be loaded/saved
 # TODO:
 model_json = 'model_architecture.json'
 weights    = 'model_weights.h5'
@@ -187,20 +173,32 @@ res_blocks = 3    # amount of residual blocks the network has (+1)
 ############################
 ##        TRAINING        ##
 ############################
-img_width  = 216    # size of the output of the network (play around along with batch_size to maximize memory usage)
-img_height = 216    # this size divided by the scale_fact is the input size of the network
-img_depth  = 3    # number of channels (RGB)
-epochs     = 6    # 6 works well
-batch_size = 7    # adjust based on your GPU memory (maximize memory usage)
-verbosity  = 2    # message feedback (0, 1 or 2): higher means more verbose
+# Adjust "crops_p_img", "img_height", "img_width" and "batch_size" to maximize memory usage of GPU.
+# "augment_img" will double the amount of pixels calculated below.
+# Amount of pixels per batch seen by GPU: "crops_p_img" x "batch_size" x "img_width" x "img_height"
+img_width  = 64    # size of the output of the network (play around along with batch_size to maximize memory usage)
+img_height = 64    # this size divided by the scale_fact is the input size of the network
+img_depth  = 3     # number of channels (RGB)
+epochs     = 6
+batch_size = 4     # amount of images to be cropped
+verbosity  = 2     # message feedback (0, 1 or 2): higher means more verbose
+val_split  = 0.1   # percentage of the dataset to be used for validation
 
 
 ############################
 ##       EVALUATION       ##
 ############################
-tests_path   = 'input/'  # path to the folder containing the HR images to test with
-input_width  = 128       # width size of the input used for prediction
-input_height = 128       # height size of the input used for prediction
+add_callbacks = False     # TensorBoard and visualization/diagnostic functionalities (slows down training)
+log_dir       = './logs'  # directory where the Callbacks logs will be stored
+tests_path    = 'input/'  # path to the folder containing the HR images to test with
+
+
+############################
+##       PREDICTION       ##
+############################
+input_width   = 64  # width  size of the input used for prediction
+input_height  = 64  # height size of the input used for prediction
+overlap       = 4   # amount of overlapped-pixels for predictions to remove the erroneous edges
 ```
 
 ## Built With
@@ -227,13 +225,23 @@ My thanks go to:
 Notes to self.
 
 ```
-* Integrate random size-reduction algorithms for the training-set generation
-* Fix the 128-line aesthetics
-* Integrate `requirements.txt` (https://stackoverflow.com/questions/7225900/how-to-install-packages-using-pip-according-to-the-requirements-txt-file-from-a)
-* Better integrate TensorBoard (proper feature/image visualization)
-* Use x_test to generate bicubic enlargments
-* Use Keras ImagePreProcessing object
-* Provide the "Weights" and "Architecture JSON" for both models
-* Create Android Application that uses the model as a Proof of Concept
-* Make a proper README.md with this @ https://gist.github.com/PurpleBooth/109311bb0361f32d87a2
+[-] Train new model adapting layer-names (of "model.py") with "generator.py" (def __extract_yield)
+          new model should also try out the "Conv2DTranspose"
+[-] Integrate random size-reduction algorithms for the training-set generation
+[-] Integrate `requirements.txt` (https://stackoverflow.com/questions/7225900/how-to-install-packages-using-pip-according-to-the-requirements-txt-file-from-a)
+[-] Subtract mean of images during training?
+[-] Use x_test to generate bicubic enlargments
+[-] Use Keras ImagePreProcessing object for data augmentation?
+[-] Provide the "Weights" and "Architecture JSON" for both models
+[-] Create Android Application that uses the model as a Proof of Concept
+[-] Make a proper README.md with this @ https://gist.github.com/PurpleBooth/109311bb0361f32d87a2
+[-] Stand-alone prediction repo
+[-] Switch from RGB channels to CbCrY
+
+[x] global var for callbacks to prevent loading useless vars (simple if for NO)
+[x] remove 128p line erroneous edge-predictions
+[x] no more vertical flips for data augmentation
+[x] integrate callbacks properly
+[x] integrate visualization of layers
+[x] integrate generator properly (remove dead code)
 ```

@@ -4,34 +4,22 @@
 # from constants import weights
 
 from keras.layers import *
-
-from keras.models import Model
+from keras.models import Model, load_model
 from keras.utils import plot_model
-from keras.models import load_model
-from constants import get_model_save_path
-
-from constants import img_depth
-from constants import res_blocks
-from constants import scale_fact
-
-from train import train
+from constants import get_model_save_path, img_depth, res_blocks, scale_fact
+from train import generator_train
 
 
-# TODO: Adapt to https://github.com/jmiller656/EDSR-Tensorflow/blob/master/utils.py
-def setUpModel(x_train, y_train):
-    print("Setting up the Neural Network.")
+def setUpModel():
+    print("Setting up the CNN.")
 
-    # # exemple de merge de deux networks: merge = concatenate([network1, network2])
-    # # exemple de deux inputs pour un seul model: model = Model(inputs=[visible1, visible2], outputs=output)
-
-    filters = 256
-    kernel_size = 3
+    filters = 256    # amount of filters outputted
+    kernel_size = 3  # (3x3) is the kernel size
     strides = 1
 
-    # TODO: To visualize internal layers (https://stackoverflow.com/questions/41711190/keras-how-to-get-the-output-of-each-layer/41712013#41712013)
-
     # Head module
-    input = Input(shape=(None, None, img_depth))  # None = can take inputs of different sizes
+    input = Input(name='input',
+                  shape=(None, None, img_depth))  # None = can take inputs of different sizes
     conv0 = Conv2D(filters, kernel_size, strides=strides, padding='same')(input)
 
     # Body module
@@ -61,7 +49,8 @@ def setUpModel(x_train, y_train):
         act  = ReLU()(conv)
         up   = UpSampling2D(size=2)(act)  # TODO: try "Conv2DTranspose"
 
-    output = Conv2D(filters=3,
+    output = Conv2D(name='output',
+                    filters=3,
                     kernel_size=1,
                     strides=1,
                     padding='same')(up)
@@ -71,15 +60,15 @@ def setUpModel(x_train, y_train):
 
     # save_arch_and_weights(model)  # TODO: good place? necessary?
 
-    train(model, x_train, y_train)
+    generator_train(model)
 
 
-def load_saved_model(x_train, y_train):
-    print("Loading model from memory.")
+def load_gen_model():
+    print("Loading model from memory (with generator).")
     model = load_model(get_model_save_path())  # TODO: add try-catch in case of wrong variable
     sanity_checks(model)
 
-    train(model, x_train, y_train)
+    generator_train(model)
 
 
 def sanity_checks(model):
@@ -87,7 +76,7 @@ def sanity_checks(model):
     plot_model(model, to_file='CNN_graph.png')
 
 
-#def save_arch_and_weights(model):
+# def save_arch_and_weights(model):
     # # Save the model architecture (JSON)
     # model_path = save_dir + '/' + model_json
     # with open(model_path, 'w') as f:

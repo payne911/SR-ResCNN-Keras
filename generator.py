@@ -4,8 +4,8 @@ import glob
 import skimage.io
 
 from constants import img_width, img_height,\
-    augment_img, crops_p_img, batch_size, scale_fact
-#from utils import float_im, downscale
+    augment_img, crops_p_img, batch_size
+from utils import float_im, single_downscale
 
 
 class ImgDataGenerator:
@@ -110,29 +110,11 @@ class ImgDataGenerator:
     def __downscale(self, images):
         x = []
         for img in images:
-            x.append(self.__single_downscale(img, img_width, img_height))
+            x.append(single_downscale(img, img_width, img_height))
         return np.array(x)
-
-    def __single_downscale(self, img, width, height):
-        """
-        Downscales an image by the factor set in the 'constants'
-        :param img: the image
-        :param width: width to be downscaled
-        :param height: height to be downscaled
-        :return: returns a float-type numpy by default (values between 0 and 1)
-        """
-        scaled_img = skimage.transform.resize(
-            img,
-            (width // scale_fact, height // scale_fact),
-            mode='reflect',
-            anti_aliasing=True)
-        return scaled_img
 
     def __get_pattern_match(self):
         return self.path + '*.png'
-
-    def __float_im(self, img):
-        return np.divide(img, 255.)
 
     def __extract_yield(self, y):
         y = np.array(y)
@@ -152,11 +134,11 @@ class ImgDataGenerator:
                 rand_w = np.random.randint(0, img.shape[1] - crop_w)
                 tmp_img = img[rand_h:rand_h + crop_h, rand_w:rand_w + crop_w]
 
-                y.append(self.__float_im(tmp_img))  # From [0,255] to [0.,1.]
+                y.append(float_im(tmp_img))  # From [0,255] to [0.,1.]
 
                 # Augmenting the image  TODO: look into integrating "imgaug" library
                 if augment_img:
-                    y.append(self.__float_im(np.fliplr(tmp_img)))  # symmetry on 'y' axis
+                    y.append(float_im(np.fliplr(tmp_img)))  # symmetry on 'y' axis
 
         return y
 

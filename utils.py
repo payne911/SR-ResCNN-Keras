@@ -1,29 +1,10 @@
 import numpy as np
-#import matplotlib.pyplot as plt
 
 import skimage
 from skimage import transform
-from skimage import io
 from PIL import Image
-import glob
 
-from constants import y_data_path
-from constants import img_width
-from constants import img_height
 from constants import scale_fact
-
-from model import setUpModel
-from model import load_saved_model
-from constants import load_model
-
-
-def loadData():
-    print("Loading data.")
-    # TODO: return to "float_im" once certain that 216x216 is fine, or the generated dataset now has proper dimension
-    images = [crop_center(skimage.io.imread(path), img_width, img_height) for path in glob.glob(y_data_path + "*.png")]
-
-    print("Converting to Numpy Array.")
-    setUpData(np.array(images))
 
 
 def float_im(img):
@@ -44,7 +25,6 @@ def crop_center(img, crop_x, crop_y):
     start_y = y//2-(crop_y // 2)
 
     cropped_img = img[start_y:start_y + crop_y, start_x:start_x + crop_x]
-
     return float_im(cropped_img)
 
 
@@ -73,18 +53,7 @@ def save_np_img(np_img, path, name):
 
     im = Image.fromarray(np_img)
     im.save(path + name)
-
     return np_img
-
-
-def downscale(images):
-    print("Downscaling training set.")
-    x = []
-
-    for img in images:
-        x.append(single_downscale(img, img_width, img_height))
-
-    return np.array(x)
 
 
 def single_downscale(img, width, height):
@@ -101,28 +70,4 @@ def single_downscale(img, width, height):
         (width // scale_fact, height // scale_fact),
         mode='reflect',
         anti_aliasing=True)
-
     return scaled_img
-
-
-# TODO: Use Keras "ImageDataGenerator" (https://stackoverflow.com/a/52462868/9768291) (https://stackoverflow.com/a/43382171/9768291)
-def setUpData(y_train):
-    print("Shape of the training set created:", y_train.shape)
-    x_train = downscale(y_train)
-
-    # TODO: Substract mean of all images
-
-    # # Sanity check: display eight images
-    # plt.figure(figsize=(10, 10))
-    # for i in range(4):
-    #     plt.subplot(3, 3, i + 1)
-    #     plt.imshow(y_train[i], cmap=plt.cm.binary)
-    # for i in range(4):
-    #     plt.subplot(3, 3, i + 1 + 4)
-    #     plt.imshow(x_train[i], cmap=plt.cm.binary)
-    # plt.show()
-
-    if load_model:
-        load_saved_model(x_train, y_train)
-    else:
-        setUpModel(x_train, y_train)
