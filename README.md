@@ -1,4 +1,4 @@
-# SR-ResCNN
+# SR-ResCNN (Super-Resolution, with a Residual Convolutional Neural Network)
 A Keras implementation of a Super-Resolution Residual Convolutional Neural Network (CNN).
 
 The goal is to obtain a network that successfully increases the resolution of an image by filling the gaps in a manner that outperforms the generic "bicubic" method.
