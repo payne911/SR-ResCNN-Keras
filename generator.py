@@ -119,7 +119,7 @@ class ImgDataGenerator:
     def __extract_yield(self, y):
         y = np.array(y)
         x = self.__downscale(y)  # downscaling all those images
-        return {'input_1': x}, {'conv2d_13': y}  # todo: train new model to use 'input' and 'output' names
+        return {'input': x}, {'output': y}
 
     # adapted from: https://stackoverflow.com/a/52463034/9768291
     def __random_crops(self, img):

@@ -1,6 +1,8 @@
+import os as the_os
+
 from keras.callbacks import TensorBoard, ModelCheckpoint, ReduceLROnPlateau, EarlyStopping
 
-from constants import batch_size, add_callbacks, hr_img_path, val_split, log_dir
+from constants import batch_size, add_callbacks, second_path, val_split, get_log_path
 from generator import ImgDataGenerator
 
 
@@ -8,6 +10,12 @@ def get_callbacks():
     if add_callbacks:
         # (ml-gpu) C:\...\SR-ResCNN-Keras-\logs>
         # tensorboard --logdir .
+
+        # We want to create a directory for each run
+        log_dir = get_log_path()
+        if not the_os.path.isdir(log_dir):
+            the_os.mkdir(log_dir)
+
         tbCallBack = TensorBoard(log_dir=log_dir,
                                  histogram_freq=0,  # epoch-frequency of calculations
                                  write_graph=True,
@@ -41,16 +49,16 @@ def get_callbacks():
 
         import fnmatch
         import os
-        nb_samples = len(fnmatch.filter(os.listdir(hr_img_path), '*.png'))
-        train_gen, val_gen = ImgDataGenerator(hr_img_path,
+        nb_samples = len(fnmatch.filter(os.listdir(second_path), '*.png'))
+        train_gen, val_gen = ImgDataGenerator(second_path,
                                               validation_split=val_split,
                                               nb_samples=nb_samples).get_all_generators()
 
-        diagnose_cb = ModelDiagnoser(train_gen,    # data_generator
-                                     batch_size,   # batch_size
-                                     nb_samples,   # num_samples
-                                     log_dir,      # output_dir
-                                     0)            # normalization_mean
+        diagnose_cb = ModelDiagnoser(train_gen,   # data_generator
+                                     batch_size,  # batch_size
+                                     nb_samples,  # num_samples
+                                     log_dir,     # output_dir
+                                     0)           # normalization_mean
 
         # To include the full list:
         # return [save_callback, stop_callback, reduce_lr_cb, tbCallBack, diagnose_cb]
@@ -61,8 +69,6 @@ def get_callbacks():
 
 # The "Model Diagnoser" sends sample images to the Tensorboard
 # see https://stackoverflow.com/a/55856716/9768291
-import os
-
 import io
 import numpy as np
 import tensorflow as tf
@@ -95,7 +101,7 @@ def make_image_tensor(tensor):
 
 class TensorBoardWriter:
     def __init__(self, outdir):
-        assert (os.path.isdir(outdir))
+        assert (the_os.path.isdir(outdir))
         self.outdir = outdir
         self.writer = tf.summary.FileWriter(self.outdir,
                                             flush_secs=10)

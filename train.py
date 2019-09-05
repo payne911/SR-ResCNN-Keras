@@ -9,7 +9,7 @@ from generator import ImgDataGenerator
 
 
 def generator_train(model):
-    print("Training is starting.")
+    print("\n\nTraining is starting.")
 
     if load_model == False:
         print("Compiling the model since it wasn't loaded from memory.")

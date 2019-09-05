@@ -22,8 +22,6 @@ parser.add_argument('-s', '--save', type=str, default='your_image.png',
 args = parser.parse_args()
 
 
-# TODO: redo picture 1 and 2 in "input/downscaled"
-
 
 def predict(args):
     """
