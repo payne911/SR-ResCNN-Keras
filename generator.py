@@ -26,7 +26,7 @@ class ImgDataGenerator:
 
     def get_full_generator(self):
         if not self.split == 0.0:
-            raise Exception("Use the specific getters when a non-default"
+            raise Exception("Use the specific getters when a non-default "
                             "validation_split value is provided.")
 
         i = 0
@@ -52,7 +52,7 @@ class ImgDataGenerator:
 
     def get_training_generator(self):
         if self.split == 0.0:
-            raise Exception("You must have specified a non-default"
+            raise Exception("You must have specified a non-default "
                             "validation_split value to use this.")
 
         exclusion_index = self.nb_samples - int(self.split * self.nb_samples)
@@ -81,7 +81,8 @@ class ImgDataGenerator:
 
     def get_validation_generator(self):
         if self.split == 0.0:
-            raise Exception("You must have specified a non-default validation_split value to use this.")
+            raise Exception("You must have specified a non-default "
+                            "validation_split value to use this.")
 
         exclusion_index = self.nb_samples - int(self.split * self.nb_samples)
         i = 0
@@ -91,7 +92,7 @@ class ImgDataGenerator:
             amount = 0
             for img_path in glob.iglob(pattern_path):  # avoids loading whole dataset in RAM
                 i += 1
-                if i <= exclusion_index:  # excluding validation set
+                if i <= exclusion_index:  # excluding training set
                     continue
 
                 img = skimage.io.imread(img_path)

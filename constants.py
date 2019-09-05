@@ -42,7 +42,7 @@ epochs      = 2    # todo: figure out how many to not overfit (was 6)
 batch_size  = 4    # amount of images to be cropped
 verbosity   = 2    # message feedback (0, 1 or 2): higher means more verbose
 val_split   = 0.1  # percentage of the dataset to be used for validation
-hr_img_path = 'dataset/DIV2K/DIV2K/DIV2K_train_HR'  # Where the training dataset is.
+hr_img_path = 'dataset/DIV2K/DIV2K/DIV2K_train_HR/'  # Where the training dataset is.
 # hr_img_path = 'pictures/HR/'  # Use this when you want to test the initialization of the filters.
 second_path = 'pictures/HR/'  # Path used for Diagnose.
 
