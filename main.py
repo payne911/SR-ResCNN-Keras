@@ -1,14 +1,10 @@
-import utils
-from constants import prepare_img
-from constants import hr_img_path
-import prepare_data
+from constants import load_model
+from model import load_gen_model, setUpModel
 
 
 if __name__ == '__main__':
 
-    if prepare_img:
-        # Load, crop and save images from folder path
-        prepare_data.load_imgs(hr_img_path + "*.png")  # TODO: customize path (command line)
+    if load_model:
+        load_gen_model()
     else:
-        # Load data already prepared
-        utils.loadData()
+        setUpModel()

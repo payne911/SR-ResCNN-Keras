@@ -5,12 +5,8 @@ import skimage.io
 
 from keras.models import load_model
 
-from constants import verbosity
-from constants import save_dir
-from constants import model_name
-from constants import tests_path
-from constants import input_width
-from constants import input_height
+from constants import verbosity, save_dir, overlap, \
+    model_name, tests_path, input_width, input_height, scale_fact
 from utils import float_im
 
 
@@ -30,6 +26,15 @@ args = parser.parse_args()
 
 
 def predict(args):
+    """
+    Super-resolution on the input image using the model.
+
+    :param args:
+    :return:
+        'predictions' contains an array of every single cropped sub-image once enhanced (the outputs of the model).
+        'image' is the original image, untouched.
+        'crops' is the array of every single cropped sub-image that will be used as input to the model.
+    """
     model = load_model(save_dir + '/' + args.model)
 
     image = skimage.io.imread(tests_path + args.image)[:, :, :3]  # removing possible extra channels (Alpha)
@@ -38,22 +43,32 @@ def predict(args):
     predictions = []
     images = []
 
-    crops = seq_crop(image)  # crops into multiple sub-parts the image based on 'input_' constants
+    # Padding and cropping the image
+    overlap_pad = (overlap, overlap)  # padding tuple
+    pad_width = (overlap_pad, overlap_pad, (0, 0))  # assumes color channel as last
+    padded_image = np.pad(image, pad_width, 'constant')  # padding the border
+    crops = seq_crop(padded_image)  # crops into multiple sub-parts the image based on 'input_' constants
 
-    for i in range(len(crops)):  # amount of vertical crops
+    # Arranging the divided image into a single-dimension array of sub-images
+    for i in range(len(crops)):         # amount of vertical crops
         for j in range(len(crops[0])):  # amount of horizontal crops
             current_image = crops[i][j]
             images.append(current_image)
 
     print("Moving on to predictions. Amount:", len(images))
-
+    upscaled_overlap = overlap * 2
     for p in range(len(images)):
-        if p%3 == 0 and verbosity == 2:
+        if p % 3 == 0 and verbosity == 2:
             print("--prediction #", p)
-        # Hack because GPU can only handle one image at a time
-        input_img = (np.expand_dims(images[p], 0))       # Add the image to a batch where it's the only member
-        predictions.append(model.predict(input_img)[0])  # returns a list of lists, one for each image in the batch
 
+        # Hack due to some GPUs that can only handle one image at a time
+        input_img = (np.expand_dims(images[p], 0))  # Add the image to a batch where it's the only member
+        pred = model.predict(input_img)[0]          # returns a list of lists, one for each image in the batch
+
+        # Cropping the useless parts of the overlapped predictions (to prevent the repeated erroneous edge-prediction)
+        pred = pred[upscaled_overlap:pred.shape[0]-upscaled_overlap, upscaled_overlap:pred.shape[1]-upscaled_overlap]
+
+        predictions.append(pred)
     return predictions, image, crops
 
 
@@ -80,17 +95,24 @@ def seq_crop(img):
     Padding with 0 the Bottom and Right image.
 
     :param img: input image
-    :return: list of sub-images with defined size
+    :return: list of sub-images with defined size (as per 'constants')
     """
-    width_shape = ceildiv(img.shape[1], input_width)
-    height_shape = ceildiv(img.shape[0], input_height)
     sub_images = []  # will contain all the cropped sub-parts of the image
-
-    for j in range(height_shape):
+    j, shifted_height = 0, 0
+    while shifted_height < (img.shape[0] - input_height):
         horizontal = []
-        for i in range(width_shape):
-            horizontal.append(crop_precise(img, i*input_width, j*input_height, input_width, input_height))
+        shifted_height = j * (input_height - overlap)
+        i, shifted_width = 0, 0
+        while shifted_width < (img.shape[1] - input_width):
+            shifted_width = i * (input_width - overlap)
+            horizontal.append(crop_precise(img,
+                                           shifted_width,
+                                           shifted_height,
+                                           input_width,
+                                           input_height))
+            i += 1
         sub_images.append(horizontal)
+        j += 1
 
     return sub_images
 
@@ -103,23 +125,25 @@ def crop_precise(img, coord_x, coord_y, width_length, height_length):
     :param img: image to crop
     :param coord_x: width coordinate (top left point)
     :param coord_y: height coordinate (top left point)
-    :param width_length: width of the cropped portion starting from coord_x
-    :param height_length: height of the cropped portion starting from coord_y
+    :param width_length: width of the cropped portion starting from coord_x (toward right)
+    :param height_length: height of the cropped portion starting from coord_y (toward bottom)
     :return: the cropped part of the image
     """
-
     tmp_img = img[coord_y:coord_y + height_length, coord_x:coord_x + width_length]
-
     return float_im(tmp_img)  # From [0,255] to [0.,1.]
-
-
-# from  https://stackoverflow.com/a/17511341/9768291
-def ceildiv(a, b):
-    return -(-a // b)
 
 
 # adapted from  https://stackoverflow.com/a/52733370/9768291
 def reconstruct(predictions, crops):
+    """
+    Used to reconstruct a whole image from an array of mini-predictions.
+    The image had to be split in sub-images because the GPU's memory
+    couldn't handle the prediction on a whole image.
+
+    :param predictions: an array of upsampled images, from left to right, top to bottom.
+    :param crops: 2D array of the cropped images
+    :return: the reconstructed image as a whole
+    """
 
     # unflatten predictions
     def nest(data, template):
@@ -129,6 +153,7 @@ def reconstruct(predictions, crops):
     if len(crops) != 0:
         predictions = nest(predictions, crops)
 
+    # At this point "predictions" is a 3D image of the individual outputs
     H = np.cumsum([x[0].shape[0] for x in predictions])
     W = np.cumsum([x.shape[1] for x in predictions[0]])
     D = predictions[0][0]
@@ -136,7 +161,10 @@ def reconstruct(predictions, crops):
     for rd, rs in zip(np.split(recon, H[:-1], 0), predictions):
         for d, s in zip(np.split(rd, W[:-1], 1), rs):
             d[...] = s
-    return recon
+
+    # Removing the pad from the reconstruction
+    tmp_overlap = overlap * (scale_fact - 1)  # using "-2" leaves the outer edge-prediction error
+    return recon[tmp_overlap:recon.shape[0]-tmp_overlap, tmp_overlap:recon.shape[1]-tmp_overlap]
 
 
 if __name__ == '__main__':
@@ -145,6 +173,6 @@ if __name__ == '__main__':
     preds, original, crops = predict(args)  # returns the predictions along with the original
     enhanced = reconstruct(preds, crops)    # reconstructs the enhanced image from predictions
 
+    # Save and display the result
     plt.imsave('output/' + args.save, enhanced, cmap=plt.cm.gray)
-
     show_pred_output(original, enhanced)

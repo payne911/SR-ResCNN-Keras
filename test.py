@@ -4,13 +4,8 @@ import skimage.io
 #from PIL import Image
 
 import utils
-from constants import input_width
-from constants import input_height
-from constants import scale_fact
-from constants import batch_size
-from constants import verbosity
-from constants import get_model_save_path
-from constants import tests_path
+from constants import batch_size, input_width, input_height,\
+    scale_fact, verbosity, get_model_save_path, tests_path
 
 
 def run_tests(model):
@@ -27,7 +22,9 @@ def extract_tests():
 
     for i in range(11):
         # Extracting the benchmark images (HR)
-        y_test = utils.crop_center(skimage.io.imread(tests_path + str(i) + ".png"), input_width * scale_fact, input_height * scale_fact)
+        y_test = utils.crop_center(skimage.io.imread(tests_path + str(i) + ".png"),
+                                   input_width * scale_fact,
+                                   input_height * scale_fact)
         y.append(y_test)
         # Extracting middle part for prediction test
         x.append(utils.single_downscale(y_test, input_width * scale_fact, input_height * scale_fact))
@@ -111,4 +108,4 @@ def prompt_model_save(model):
         model.save(get_model_save_path())
         print("Model saved! :)")
         # model.save_weights('save/model_weights.h5')
-    del model  # deletes the existing model  # TODO: use it even if not saving?
+    del model  # deletes the existing model

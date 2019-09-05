@@ -59,6 +59,7 @@ def get_callbacks():
         return None
 
 
+# The "Model Diagnoser" sends sample images to the Tensorboard
 # see https://stackoverflow.com/a/55856716/9768291
 import os
 
