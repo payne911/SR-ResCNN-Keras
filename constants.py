@@ -38,13 +38,13 @@ res_blocks = 3    # amount of residual blocks the network has (+1)
 img_width   = 64   # size of the output of the network (play around along with batch_size to maximize memory usage)
 img_height  = 64   # this size divided by the scale_fact is the input size of the network
 img_depth   = 3    # number of channels (RGB)
-epochs      = 2    # todo: figure out how many to not overfit (was 6)
-batch_size  = 4    # amount of images to be cropped
+epochs      = 12   # amount of times the training data is used
+batch_size  = 2    # amount of images to be cropped
 verbosity   = 2    # message feedback (0, 1 or 2): higher means more verbose
 val_split   = 0.1  # percentage of the dataset to be used for validation
 hr_img_path = 'dataset/DIV2K/DIV2K/DIV2K_train_HR/'  # Where the training dataset is.
-# hr_img_path = 'pictures/HR/'  # Use this when you want to test the initialization of the filters.
-second_path = 'pictures/HR/'  # Path used for Diagnose.
+#hr_img_path = 'pictures/HR/'  # Use this when you want to test the initialization of the filters.
+sample_path = 'pictures/HR/'  # Path used for the ModelDiagnoser.
 
 
 ############################

@@ -1,5 +1,6 @@
 import numpy as np
 import glob
+import os as the_os
 
 import skimage.io
 
@@ -8,11 +9,13 @@ from constants import img_width, img_height,\
 from utils import float_im, single_downscale
 
 
-class ImgDataGenerator:
+class ImgDataGenerator:  # todo: extend keras.utils.Sequence
     def __init__(self,
-                 path,
-                 validation_split=0.0,
-                 nb_samples=0):
+                 path,                  # folder used by the generator to take images from
+                 validation_split=0.0,  # percentage of the folder that will be split between validation and training set
+                 nb_samples=0):         # number of images in the folder)
+        if not the_os.path.isdir(path):
+            raise Exception("The directory path for the Generator doesn't exist.")
         if validation_split < 0.0 or validation_split > 1.0:
             raise Exception("validation_split must be ranged inclusively between 0 and 1.")
         if validation_split > 0.0 and nb_samples <= 0:
@@ -22,12 +25,17 @@ class ImgDataGenerator:
         self.nb_samples = nb_samples
 
     def get_all_generators(self):
+        """
+        :return: Both the Training and the Validation generators.
+        """
         return self.get_training_generator(), self.get_validation_generator()
 
     def get_full_generator(self):
+        """
+        :return: The generator that extracts all the data from the specified folder.
+        """
         if not self.split == 0.0:
-            raise Exception("Use the specific getters when a non-default "
-                            "validation_split value is provided.")
+            raise Exception("Use the specific getters when a non-default validation_split value is provided.")
 
         i = 0
         while True:
@@ -51,9 +59,11 @@ class ImgDataGenerator:
             i = 0
 
     def get_training_generator(self):
+        """
+        :return: The generator that only extracts from the Training set.
+        """
         if self.split == 0.0:
-            raise Exception("You must have specified a non-default "
-                            "validation_split value to use this.")
+            raise Exception("You must have specified a non-default validation_split value to use this.")
 
         exclusion_index = self.nb_samples - int(self.split * self.nb_samples)
         i = 0
@@ -80,9 +90,11 @@ class ImgDataGenerator:
             i = 0
 
     def get_validation_generator(self):
+        """
+        :return: The generator that only extracts from the Validation set.
+        """
         if self.split == 0.0:
-            raise Exception("You must have specified a non-default "
-                            "validation_split value to use this.")
+            raise Exception("You must have specified a non-default validation_split value to use this.")
 
         exclusion_index = self.nb_samples - int(self.split * self.nb_samples)
         i = 0

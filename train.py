@@ -33,13 +33,13 @@ def generator_train(model):
     train_steps_per_epoch = math.ceil(nb_samples / batch_size)
     val_steps_per_epoch   = math.ceil((nb_samples - int(val_split * nb_samples)) / batch_size)
 
-    model.fit_generator(train_gen,
-                        steps_per_epoch=train_steps_per_epoch,  # number of batches coming out of generator
-                        epochs=epochs,
-                        validation_data=val_gen,
-                        validation_steps=val_steps_per_epoch,
-                        verbose=verbosity,
-                        shuffle=False,
-                        callbacks=get_callbacks())
+    history = model.fit_generator(train_gen,
+                                  steps_per_epoch=train_steps_per_epoch,  # number of batches coming out of generator
+                                  epochs=epochs,
+                                  validation_data=val_gen,
+                                  validation_steps=val_steps_per_epoch,
+                                  verbose=verbosity,
+                                  shuffle=False,
+                                  callbacks=get_callbacks())
 
-    run_tests(model)
+    run_tests(model, history)

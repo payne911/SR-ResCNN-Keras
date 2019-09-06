@@ -2,7 +2,7 @@ import os as the_os
 
 from keras.callbacks import TensorBoard, ModelCheckpoint, ReduceLROnPlateau, EarlyStopping
 
-from constants import batch_size, add_callbacks, second_path, val_split, get_log_path
+from constants import batch_size, add_callbacks, sample_path, get_log_path
 from generator import ImgDataGenerator
 
 
@@ -29,7 +29,7 @@ def get_callbacks():
                                         save_best_only=True,
                                         save_weights_only=False,
                                         mode='auto',
-                                        period=5)  # Interval (number of epochs) between checkpoints.
+                                        period=4)  # Interval (number of epochs) between checkpoints.
 
         reduce_lr_cb = ReduceLROnPlateau(monitor='val_loss',
                                          factor=0.1,  # new_lr = lr * factor
@@ -42,19 +42,19 @@ def get_callbacks():
 
         stop_callback = EarlyStopping(monitor='val_loss',
                                       min_delta=0.00001,  # change of less than min_delta will count as no improvement
-                                      patience=10,  # number of epochs with no improvement before stopping
+                                      patience=10,        # number of epochs with no improvement before stopping
                                       verbose=1,
                                       mode='auto',
                                       baseline=None)
 
         import fnmatch
         import os
-        nb_samples = len(fnmatch.filter(os.listdir(second_path), '*.png'))
-        train_gen, val_gen = ImgDataGenerator(second_path,
-                                              validation_split=val_split,
-                                              nb_samples=nb_samples).get_all_generators()
+        nb_samples = len(fnmatch.filter(os.listdir(sample_path), '*.png'))
+        sample_gen = ImgDataGenerator(sample_path,
+                                      validation_split=0.0,
+                                      nb_samples=nb_samples).get_full_generator()
 
-        diagnose_cb = ModelDiagnoser(train_gen,   # data_generator
+        diagnose_cb = ModelDiagnoser(sample_gen,  # data_generator
                                      batch_size,  # batch_size
                                      nb_samples,  # num_samples
                                      log_dir,     # output_dir
@@ -65,6 +65,12 @@ def get_callbacks():
         return [tbCallBack, diagnose_cb]
     else:
         return None
+
+
+
+
+
+
 
 
 # The "Model Diagnoser" sends sample images to the Tensorboard
@@ -103,8 +109,8 @@ class TensorBoardWriter:
     def __init__(self, outdir):
         assert (the_os.path.isdir(outdir))
         self.outdir = outdir
-        self.writer = tf.summary.FileWriter(self.outdir,
-                                            flush_secs=10)
+        self.writer = tf.compat.v1.summary.FileWriter(self.outdir,
+                                                      flush_secs=10)
 
     def save_image(self, tag, image, global_step=None):
         image_tensor = make_image_tensor(image)
@@ -119,12 +125,8 @@ class TensorBoardWriter:
 
 
 class ModelDiagnoser(Callback):
-    def __init__(self,
-                 data_generator,
-                 m_batch_size,
-                 num_samples,
-                 output_dir,
-                 normalization_mean):
+    def __init__(self, data_generator, m_batch_size, num_samples, output_dir, normalization_mean):
+        super().__init__()
         self.epoch_index = 0
         self.data_generator = data_generator
         self.batch_size = m_batch_size
@@ -140,7 +142,10 @@ class ModelDiagnoser(Callback):
             self.enqueuer = GeneratorEnqueuer(self.data_generator,
                                               use_multiprocessing=False,  # todo: how to 'True' ?
                                               wait_time=0.01)
-        self.enqueuer.start(workers=4, max_queue_size=4)
+        # todo: integrate the Sequence generator properly
+#        import multiprocessing
+#        self.enqueuer.start(workers=multiprocessing.cpu_count(), max_queue_size=4)
+        self.enqueuer.start(workers=1, max_queue_size=4)
 
     def on_epoch_end(self, epoch, logs=None):
         output_generator = self.enqueuer.get()

@@ -8,7 +8,18 @@ from constants import batch_size, input_width, input_height,\
     scale_fact, verbosity, get_model_save_path, tests_path
 
 
-def run_tests(model):
+def run_tests(model, history):
+    print("\nExtracting the History (Callback) of metrics to display graph.")
+    # Plot training & validation loss values
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('Model loss')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.show()
+
+    # Then we run a few self-designed tests
     x_test, y_test = extract_tests()
 
     evaluate(model, x_test, y_test)
