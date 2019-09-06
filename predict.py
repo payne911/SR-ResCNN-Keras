@@ -172,5 +172,6 @@ if __name__ == '__main__':
     enhanced = reconstruct(preds, crops)    # reconstructs the enhanced image from predictions
 
     # Save and display the result
+    enhanced = np.clip(enhanced, 0, 1)
     plt.imsave('output/' + args.save, enhanced, cmap=plt.cm.gray)
     show_pred_output(original, enhanced)
