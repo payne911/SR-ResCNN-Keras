@@ -23,9 +23,9 @@ To better counter the bias related to the learning of "reversing the reduction a
 It might also be interesting to integrate more data augmentation within the training phase of the model.
 
 # Demonstrations
-The latest results came from the model that can take any size as input and that was trained with the `Adadelta` optimizer with a decent part of the whole dataset:
+The latest results came from the model that was trained with the `Adadelta` optimizer with the whole dataset:
 
-![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results25.png)
+![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/HR_skier_result.png)
 
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results26.png)
 
@@ -35,7 +35,7 @@ And if you're curious, here is an older result that came from another model that
 
 The images used were, of course, never revealed to the network during training.
 
-More examples of results can be [found here](https://github.com/payne911/SR-ResCNN-Keras-/tree/master/pictures).
+More examples of results can be [found here](https://github.com/payne911/SR-ResCNN-Keras-/tree/master/pictures), though there are demonstrations using older models included in there as well.
 
 ### Unbiased demonstration
 About the "**Warning on bias**" section, here is an actual example that came from the wild: a low-resolution image that came as is.
@@ -86,11 +86,11 @@ hdf5 (h5py?)
 ```
 
 ### Pre-trained model
-I have **two** pre-trained models. They are all in the `save` folder. All these files include the weights AND the optimizer's state (so that you can train with that too).
+There are **two** pre-trained models in the `save` folder. All these files include the weights AND the optimizer's state (so that you can train with that too).
+
+**``unrestricted_full_model.h5``**: This model uses the `Adadelta` optimizer and was trained using the whole dataset.
 
 **``unrestricted_model.h5``**: This model uses the `Adadelta` optimizer and was trained with smaller sized inputs to permit bigger batch sizes (shorter train times, but more epochs required to achieve same accuracy) compared to the older models. It was *not* trained with the whole dataset.
-
-**``unrestricted_model_laptop_test.h5``**: This model is more or less irrelevant to you and has been used to pursue some tests ran on my laptop, which doesn't have a GPU. It will eventually be replaced with a model trained with the whole dataset.
 
 I plan on providing the architecture as a JSON and the weights as individual files so that those can be used as "ready for integration" (I believe Android requires those files, though I still need to look that up).
 
@@ -226,8 +226,7 @@ My thanks go to:
 Notes to self.
 
 ```
-[-] Train new model adapting layer-names (of "model.py") with "generator.py" (def __extract_yield)
-          new model should also try out the "Conv2DTranspose"
+[-] Train new model should also try out the "Conv2DTranspose"
 [-] Integrate random size-reduction algorithms for the training-set generation
 [-] Integrate `requirements.txt` (https://stackoverflow.com/questions/7225900/how-to-install-packages-using-pip-according-to-the-requirements-txt-file-from-a)
 [-] Subtract mean of images during training?
@@ -239,6 +238,7 @@ Notes to self.
 [-] Stand-alone prediction repo
 [-] Switch from RGB channels to CbCrY
 
+[x] train new model adapting layer-names (of "model.py") with "generator.py" (def __extract_yield)
 [x] global var for callbacks to prevent loading useless vars (simple if for NO)
 [x] remove 128p line erroneous edge-predictions
 [x] no more vertical flips for data augmentation
