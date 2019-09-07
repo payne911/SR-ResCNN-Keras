@@ -4,7 +4,7 @@ import skimage.io
 #from PIL import Image
 
 import utils
-from constants import batch_size, input_width, input_height,\
+from constants import input_width, input_height,\
     scale_fact, verbosity, get_model_save_path, tests_path
 
 
@@ -16,7 +16,7 @@ def run_tests(model, history):
     plt.title('Model loss')
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
-    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.legend(['Train', 'Validation'], loc='upper right')
     plt.show()
 
     # Then we run a few self-designed tests

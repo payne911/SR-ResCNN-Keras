@@ -59,7 +59,7 @@ def save_np_img(np_img, path, name):
 def single_downscale(img, width, height):
     """
     Downscales an image by the factor set in the 'constants'
-    :param img: the image
+    :param img: the image, as a Numpy Array
     :param width: width to be downscaled
     :param height: height to be downscaled
     :return: returns a float-type numpy by default (values between 0 and 1)
