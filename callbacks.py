@@ -8,6 +8,7 @@ from generator import ImgDataGenerator
 
 def get_callbacks():
     if add_callbacks:
+        # activate ml-gpu
         # (ml-gpu) C:\...\SR-ResCNN-Keras-\logs>
         # tensorboard --logdir .
 
@@ -52,7 +53,8 @@ def get_callbacks():
         nb_samples = len(fnmatch.filter(os.listdir(sample_path), '*.png'))
         sample_gen = ImgDataGenerator(sample_path,
                                       validation_split=0.0,
-                                      nb_samples=nb_samples).get_full_generator()
+                                      nb_samples=nb_samples,
+                                      random_samples=False).get_full_generator()
 
         diagnose_cb = ModelDiagnoser(sample_gen,  # data_generator
                                      batch_size,  # batch_size

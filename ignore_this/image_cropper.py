@@ -2,7 +2,7 @@ import skimage.io
 import matplotlib.pyplot as plt
 
 
-image = skimage.io.imread('input/' + "2.png")
+image = skimage.io.imread('../' + 'input/' + "2.png")
 
 input_width  = 128
 input_height = 128

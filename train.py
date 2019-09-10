@@ -29,7 +29,8 @@ def generator_train(model):
 
     train_gen, val_gen = ImgDataGenerator(hr_img_path,
                                           validation_split=val_split,
-                                          nb_samples=nb_samples).get_all_generators()
+                                          nb_samples=nb_samples,
+                                          random_samples=False).get_all_generators()
     train_steps_per_epoch = math.ceil(nb_samples / batch_size)
     val_steps_per_epoch   = math.ceil((nb_samples - int(val_split * nb_samples)) / batch_size)
 

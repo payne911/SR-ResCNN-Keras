@@ -1,8 +1,12 @@
 import numpy as np
 import glob
-import os as the_os
+import os
 
 import skimage.io
+
+import math
+from scipy.ndimage import sobel
+from scipy.stats import truncnorm
 
 from constants import img_width, img_height,\
     augment_img, crops_p_img, batch_size
@@ -13,19 +17,24 @@ class ImgDataGenerator:  # todo: extend keras.utils.Sequence
     def __init__(self,
                  path,                  # folder used by the generator to take images from
                  validation_split=0.0,  # percentage of the folder that will be split between validation and training set
-                 nb_samples=0):         # number of images in the folder)
-        if not the_os.path.isdir(path):
+                 nb_samples=0,          # number of images in the folder
+                 random_samples=True):  # if 'False', will use a Sobel Filter and gaussian distribution to extract images
+        if not os.path.isdir(path):
             raise Exception("The directory path for the Generator doesn't exist.")
         if validation_split < 0.0 or validation_split > 1.0:
             raise Exception("validation_split must be ranged inclusively between 0 and 1.")
         if validation_split > 0.0 and nb_samples <= 0:
             raise Exception("You must specify a positive amount of samples.")
+        if not random_samples:
+            self.sobel_sampler = SortedSobelImageProcessor(img_width, crops_p_img, 0.4)
+        self.random_samples = random_samples
         self.split = validation_split
         self.path = path
         self.nb_samples = nb_samples
 
     def get_all_generators(self):
         """
+        todo: use "multi_fold" generators to expose a bigger part of the dataset
         :return: Both the Training and the Validation generators.
         """
         return self.get_training_generator(), self.get_validation_generator()
@@ -43,10 +52,8 @@ class ImgDataGenerator:  # todo: extend keras.utils.Sequence
             y = []
             amount = 0
             for img_path in glob.iglob(pattern_path):  # avoids loading whole dataset in RAM
-                img = skimage.io.imread(img_path)
-                amount += 1
                 i += 1
-                y.extend(self.__random_crops(img))  # adding multiple crops out of a single image
+                amount = self.__extract(amount, img_path, y)  # extract multiple crops from a single image
 
                 if amount % batch_size == 0:  # yielding a single batch
                     amount = 0
@@ -54,7 +61,6 @@ class ImgDataGenerator:  # todo: extend keras.utils.Sequence
                     y = []
 
             if y:  # if iglob finished but didn't yield because of modulo not reached
-                print("Yielding the final images that were left behind.")
                 yield self.__extract_yield(y)
             i = 0
 
@@ -76,10 +82,8 @@ class ImgDataGenerator:  # todo: extend keras.utils.Sequence
                 if i > exclusion_index:  # excluding validation set
                     continue
 
-                img = skimage.io.imread(img_path)
-                amount += 1
-                y.extend(self.__random_crops(img))  # adding multiple crops out of a single image
-
+                amount = self.__extract(amount, img_path, y)  # extract multiple crops from a single image
+                print("treated img: " + img_path)
                 if amount % batch_size == 0:  # yielding a single batch
                     amount = 0
                     yield self.__extract_yield(y)
@@ -107,9 +111,7 @@ class ImgDataGenerator:  # todo: extend keras.utils.Sequence
                 if i <= exclusion_index:  # excluding training set
                     continue
 
-                img = skimage.io.imread(img_path)
-                amount += 1
-                y.extend(self.__random_crops(img))  # adding multiple crops out of a single image
+                amount = self.__extract(amount, img_path, y)  # extract multiple crops from a single image
 
                 if amount % batch_size == 0:  # yielding a single batch
                     amount = 0
@@ -119,6 +121,22 @@ class ImgDataGenerator:  # todo: extend keras.utils.Sequence
             if y:  # if iglob finished but didn't yield because of modulo not reached
                 yield self.__extract_yield(y)
             i = 0
+
+    def __extract(self, amount, img_path, y):
+        img = skimage.io.imread(img_path)
+
+        if self.random_samples:
+            y.extend(self.__random_crops(img))  # random crops
+        else:
+            y.extend(self.__sobel_sample(img))  # gaussian crops
+
+        # Augmenting the image  TODO: look into integrating "imgaug" library
+        if augment_img:
+            z = []
+            for img in y:
+                z.append(np.fliplr(img))  # symmetry on 'y' axis
+            y.extend(z)
+        return amount+1
 
     def __downscale(self, images):
         x = []
@@ -149,11 +167,10 @@ class ImgDataGenerator:  # todo: extend keras.utils.Sequence
 
                 y.append(float_im(tmp_img))  # From [0,255] to [0.,1.]
 
-                # Augmenting the image  TODO: look into integrating "imgaug" library
-                if augment_img:
-                    y.append(float_im(np.fliplr(tmp_img)))  # symmetry on 'y' axis
-
         return y
+
+    def __sobel_sample(self, img):
+        return self.sobel_sampler.sobel_sample(img)
 
     # from: https://stackoverflow.com/a/34913974/9768291
     def __rgb2ycbcr(self, im):
@@ -162,3 +179,75 @@ class ImgDataGenerator:  # todo: extend keras.utils.Sequence
         ycbcr = im.dot(xform.T)
         ycbcr[:, :, [1, 2]] += 128
         return np.uint8(ycbcr)
+
+
+class SortedSobelImageProcessor:
+    def __init__(self,
+                 crop_size,  # Size of the crops
+                 crop_amnt,  # The amount of images extracted
+                 sigma):     # The sampling distribution value
+        self.crop_size = crop_size
+        self.crop_amnt = crop_amnt
+        self.sigma = sigma
+
+    def sobel_sample(self, img):
+        """
+        Uses the sigma value to sample the input image path.
+        A lower sigma value (like 0.2) will result in more complex images being returned.
+        The sigma has no maximum value.
+        :param img: an image.
+        :return: "batch_size" amount of images extracted from the input.
+        """
+        images, images_gradient = self.__crop_image(img)             # Crop the image
+        images_sorted = self.__sort_images(images, images_gradient)  # Sort the crops
+        return self.__sample_gaussian(images_sorted)                 # Sampled gaussian distribution
+
+    def __crop_image(self, img):
+        """
+        Splits the image, extracting the Sobel component (edge detection) at the same time.
+        :param img: input image to be split and treated.
+        :return: list of sub-images, and a list of their corresponding Sobel component's value.
+        """
+        images = []
+        images_gradient = []
+
+        for y in range(math.floor(float(img.shape[-3]) / self.crop_size)):
+            ystart = y * self.crop_size
+            yend = ystart + self.crop_size
+
+            for x in range(math.floor(float(img.shape[-2]) / self.crop_size)):
+                xstart = x * self.crop_size
+                xend = xstart + self.crop_size
+
+                imgcrop = float_im(img[ystart:yend, xstart:xend, :])  # From [0,255] to [0.,1.]
+                images.append(imgcrop)
+
+                imgsobel = np.sqrt((sobel(imgcrop, axis=-3) ** 2) + (sobel(imgcrop, axis=-2) ** 2)).mean()
+                images_gradient.append(imgsobel)
+
+        images = np.array(images)
+        images_gradient = np.array(images_gradient)
+
+        return images, images_gradient
+
+    def __sort_images(self, images, images_gradient):
+        """
+        Sorts the cropped images by their gradient amplitude.
+        :param images: first output from the "crop_image" function.
+        :param images_gradient: second output from the "crop_image" function.
+        :return: the sorted input arrays.
+        """
+        im_argsort = np.flip(np.argsort(images_gradient, kind='stable'))
+        return images[im_argsort]
+
+    def __sample_gaussian(self, images_sorted):
+        """
+        Selects random images with gaussian distribution with replacement.
+        :param images_sorted: sorted numpy array of cropped images (first output from "sort_images" function).
+        :return: a "batch_size" amount of randomly sampled images, according to the sigma parameter of the class.
+        """
+        images_max = len(images_sorted) - 1
+        randomidx = np.clip(
+            np.round(np.abs(truncnorm.rvs(a=0, b=1.0 / self.sigma, scale=images_max * self.sigma, size=self.crop_amnt))), 0,
+            images_max).astype(np.int)
+        return images_sorted[randomidx]

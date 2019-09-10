@@ -2,6 +2,5 @@
 *
 # Except this file
 !.gitignore
-!unrestricted_model.h5
-!unrestricted_model_laptop_test.h5
-!unrestricted_full_model.h5
+!sobel_model.h5
+!random_model.h5

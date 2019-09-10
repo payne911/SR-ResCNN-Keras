@@ -11,9 +11,9 @@ augment_img = True  # Augment data with flips (each image will generate an extra
 ############################
 ##       SAVE/LOAD        ##
 ############################
-load_model = True    # Should we load a saved model from memory ?
-save_dir   = 'save'  # folder name where the model will be saved
-model_name = 'unrestricted_full_model.h5'  # Name of the model that is to be loaded/saved
+load_model = True              # Should we load a saved model from memory, or create a new one?
+save_dir   = 'save'            # Folder name where the model will be saved, relative to root
+model_name = 'sobel_model.h5'  # Name of the model that is to be loaded and/or saved
 # TODO: integrate those two feedbacks
 model_json = 'model_architecture.json'
 weights    = 'model_weights.h5'
@@ -38,8 +38,8 @@ res_blocks = 3    # amount of residual blocks the network has (+1)
 img_width   = 64   # size of the output of the network (play around along with batch_size to maximize memory usage)
 img_height  = 64   # this size divided by the scale_fact is the input size of the network
 img_depth   = 3    # number of channels (RGB)
-epochs      = 12   # amount of times the training data is used
-batch_size  = 2    # amount of images to be cropped
+epochs      = 15   # amount of times the training data is used
+batch_size  = 2    # amount of images to be cropped and fed per batch
 verbosity   = 2    # message feedback (0, 1 or 2): higher means more verbose
 val_split   = 0.1  # percentage of the dataset to be used for validation
 hr_img_path = 'dataset/DIV2K/DIV2K/DIV2K_train_HR/'  # Where the training dataset is.
@@ -64,4 +64,4 @@ def get_log_path():
 ############################
 input_width   = 64  # width  size of the input used for prediction
 input_height  = 64  # height size of the input used for prediction
-overlap       = 16   # amount of overlapped-pixels for predictions to remove the erroneous edges todo: figure out how many! (tried predict.py on HR-skier "7.png" and still saw edges)
+overlap       = 16   # amount of overlapped-pixels for predictions to remove the erroneous edges

@@ -1,9 +1,19 @@
-# SR-ResCNN (Super-Resolution, with a Residual Convolutional Neural Network)
-A Keras implementation of a Super-Resolution Residual Convolutional Neural Network (CNN).
+# SISR-ResCNN (Super-Resolution, with a Residual Convolutional Neural Network)
+A Keras implementation of a Single-Image Super-Resolution Residual Convolutional Neural Network (CNN).
 
-The goal is to obtain a network that successfully increases the resolution of an image by filling the gaps in a manner that outperforms the generic "bicubic" method.
+The goal is to obtain a network that successfully increases the resolution of an image in a manner that outperforms the generic "bicubic" method.
 
 The model's architecture used in this project can be visualized [here](https://github.com/payne911/SR-ResCNN-Keras-/blob/master/CNN_graph.png).
+
+# Table of Content
+* [Warning](#warning)
+* [Demonstrations](#demonstration)
+* [Dataset](#div2k-dataset)
+* [Getting Started](#getting-started) (installation and predictions)
+* [Built With](#built-with)
+* [Author](#author)
+* [License](#license)
+* [Acknowledgments](#acknowledgments)
 
 # Warning
 This is still a Work In Progress.
@@ -33,12 +43,12 @@ And if you're curious, here is an older result that came from another model that
 
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results4.png)
 
-The images used were, of course, never revealed to the network during training.
+All those images used were, of course, never revealed to the network during training.
 
 More examples of results can be [found here](https://github.com/payne911/SR-ResCNN-Keras-/tree/master/pictures), though there are demonstrations using older models included in there as well.
 
 ### Unbiased demonstration
-About the "**Warning on bias**" section, here is an actual example that came from the wild: a low-resolution image that came as is.
+About the "[**Warning on bias**](#possible-bias)" section, here is an actual example that came from the wild: a low-resolution image that came as is.
 
 ![input](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/input/vivitest.png)
 
@@ -54,7 +64,7 @@ Thus resulting in the following "Results" comparing-image that my code spits out
 
 ![comparing](https://raw.githubusercontent.com/payne911/SR-ResCNN-Keras-/master/pictures/results27.png)
 
-### [DIV2K dataset](http://www.vision.ee.ethz.ch/~timofter/publications/Agustsson-CVPRW-2017.pdf)
+## [DIV2K dataset](http://www.vision.ee.ethz.ch/~timofter/publications/Agustsson-CVPRW-2017.pdf)
 You can download it [here](https://cv.snu.ac.kr/research/EDSR/DIV2K.tar) (7.1GB).
 
 ## Getting Started
@@ -85,12 +95,14 @@ scikit-image (skimage)
 hdf5 (h5py?)
 ```
 
-### Pre-trained model
-There are **two** pre-trained models in the `save` folder. All these files include the weights AND the optimizer's state (so that you can train with that too).
+### Pre-trained models
+There are **two** pre-trained models in the `save` folder. All these files include the weights AND the optimizer's state (so that you can train with that too). Both models use the `Adadelta` optimizer and were trained using the whole dataset.
 
-**``unrestricted_full_model.h5``**: This model uses the `Adadelta` optimizer and was trained using the whole dataset.
+During training, the models always take an input image, split it in smaller parts, and takes a few of those parts to train with.
 
-**``unrestricted_model.h5``**: This model uses the `Adadelta` optimizer and was trained with smaller sized inputs to permit bigger batch sizes (shorter train times, but more epochs required to achieve same accuracy) compared to the older models. It was *not* trained with the whole dataset.
+**``sobel_model.h5``**: Used a Sobel Filter to sort all the parts and select only the more relevant sections of an input image (thus discarding sections which contain only a single color, for example).
+
+**``random_model.h5``**: Randomly took a few of the parts to train with.
 
 I plan on providing the architecture as a JSON and the weights as individual files so that those can be used as "ready for integration" (I believe Android requires those files, though I still need to look that up).
 
@@ -150,7 +162,7 @@ augment_img = True  # Augment data with flips (each image will generate an extra
 ############################
 load_model = True    # Should we load a saved model from memory ?
 save_dir   = 'save'  # folder name where the model will be saved
-model_name = 'unrestricted_full_model.h5'  # Name of the model that is to be loaded/saved
+model_name = random_model.h5  # Name of the model that is to be loaded/saved
 
 def get_model_save_path():
     return save_dir + '/' + model_name
@@ -229,20 +241,11 @@ Notes to self.
 [-] Train new model should also try out the "Conv2DTranspose"
 [-] Integrate random size-reduction algorithms for the training-set generation
 [-] Integrate `requirements.txt` (https://stackoverflow.com/questions/7225900/how-to-install-packages-using-pip-according-to-the-requirements-txt-file-from-a)
-[-] Subtract mean of images during training?
+[-] Subtract mean of images during training
 [-] Use x_test to generate bicubic enlargments
 [-] Use Keras ImagePreProcessing object for data augmentation?
 [-] Provide the "Weights" and "Architecture JSON" for both models
 [-] Create Android Application that uses the model as a Proof of Concept
-[-] Make a proper README.md with this @ https://gist.github.com/PurpleBooth/109311bb0361f32d87a2
 [-] Stand-alone prediction repo
 [-] Switch from RGB channels to CbCrY
-
-[x] train new model adapting layer-names (of "model.py") with "generator.py" (def __extract_yield)
-[x] global var for callbacks to prevent loading useless vars (simple if for NO)
-[x] remove 128p line erroneous edge-predictions
-[x] no more vertical flips for data augmentation
-[x] integrate callbacks properly
-[x] integrate visualization of layers
-[x] integrate generator properly (remove dead code)
 ```
