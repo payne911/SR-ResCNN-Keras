@@ -7,7 +7,7 @@ The model's architecture used in this project can be visualized [here](https://g
 
 # Table of Content
 * [Warning](#warning)
-* [Demonstrations](#demonstration)
+* [Demonstrations](#demonstrations)
 * [Dataset](#div2k-dataset)
 * [Getting Started](#getting-started) (installation and predictions)
 * [Built With](#built-with)
