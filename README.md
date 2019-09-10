@@ -104,9 +104,7 @@ During training, the models always take an input image, split it in smaller part
 
 **``random_model.h5``**: Randomly took a few of the parts to train with.
 
-I plan on providing the architecture as a JSON and the weights as individual files so that those can be used as "ready for integration" (I believe Android requires those files, though I still need to look that up).
-
-I'll probably eventually provide an Android application as a Proof of Concept.
+Both models were trained for less than 20 epochs. As mentioned earlier, due to time and resource limitations, I cannot provide you with better models, but you can definitely keep training them: they were far from overfitting. Be aware that the Sobel module makes training approximately 5 times longer.
 
 ### Getting the project
 Use the following line to import the project on your computer.
@@ -233,6 +231,7 @@ My thanks go to:
 * [sds](https://stackoverflow.com/users/7350191/sds): a kind StackOverflow user that has helped understand a few things when I was just starting with this project.
 * [this repo](https://github.com/thstkdgus35/EDSR-PyTorch) which provided me with some insights on the actual implementation discussed in [this paper](https://arxiv.org/pdf/1707.02921.pdf).
 * Stanford University's [course](http://cs231n.stanford.edu/index.html) on CNN: [YouTube videos](https://www.youtube.com/playlist?list=PL3FW7Lu3i5JvHM8ljYj-zLfQRF3EO8sYv) and [syllabus](http://cs231n.stanford.edu/syllabus.html).
+* Bowen Peng (GitHub: [bloc97](https://github.com/bloc97)) for providing me with a Gist that helped me introduce the Sobel Filter in the training phase.
 
 ### TODO
 Notes to self.
